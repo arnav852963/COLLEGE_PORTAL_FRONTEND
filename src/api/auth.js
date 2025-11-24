@@ -7,6 +7,9 @@ export const authAPI = {
             headers: { "Content-Type": "multipart/form-data" },
         });
     },
+    login: (credentials) => {
+        return api.post("/users/login", credentials);
+    },
 
     // Matches user.routes.js: router.route("/googleLogin").post(...)
     googleLogin: (idToken) => {
