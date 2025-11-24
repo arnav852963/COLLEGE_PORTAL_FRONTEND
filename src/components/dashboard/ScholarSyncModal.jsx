@@ -6,7 +6,7 @@ import { X, Link as LinkIcon, DownloadCloud, CheckCircle, Loader2 } from "lucide
 export default function ScholarSyncModal({ isOpen, onClose, onSuccess }) {
     const [url, setUrl] = useState("");
     const [status, setStatus] = useState("idle"); // idle | extracting | syncing | success
-    const [logs, setLogs] = useState([]); // To show progress steps
+    const [logs, setLogs] = useState([]);
 
     if (!isOpen) return null;
 
@@ -17,12 +17,12 @@ export default function ScholarSyncModal({ isOpen, onClose, onSuccess }) {
 
         try {
             setStatus("extracting");
-            setLogs([]); // Reset logs
+            setLogs([]);
             addLog("🔍 Analyzing Profile URL...");
 
             // 1. Get Author ID
             const idResponse = await scholarAPI.getAuthorId(url);
-            const authorId = idResponse.data.data.authorId; // Based on your ApiResponse
+            const authorId = idResponse.data.data.authorId;
 
             if (!authorId) throw new Error("Could not find Author ID in this URL");
 
@@ -30,34 +30,34 @@ export default function ScholarSyncModal({ isOpen, onClose, onSuccess }) {
             addLog("☁️ Contacting Google Scholar (This takes time)...");
             setStatus("syncing");
 
-            // 2. Trigger Backend Import
-            // This runs your 'getAuthorScholar' controller which saves papers directly
+            // 2. Trigger Backend Import (Saves to DB now!)
             const syncResponse = await scholarAPI.syncPapers(authorId);
 
-            addLog("📚 Papers downloaded and saved to database.");
+            addLog("📚 Papers saved & Profile updated.");
             setStatus("success");
 
-            toast.success(syncResponse.data.message || "Sync Complete!");
+            toast.success("Sync Complete!");
 
-            // Close after a brief delay so user sees the success check
             setTimeout(() => {
-                onSuccess(); // Refresh stats on dashboard
+                // Pass the new data back to Dashboard to update UI instantly
+                if (onSuccess) {
+                    onSuccess(syncResponse.data.data);
+                }
                 onClose();
             }, 1500);
 
         } catch (err) {
             console.error(err);
             setStatus("idle");
-            addLog("❌ Error: " + (err.response?.data?.message || err.message));
-            toast.error("Sync failed. Check the URL or Backend Console.");
+            const msg = err.response?.data?.message || "Unknown error";
+            addLog("❌ Error: " + msg);
+            toast.error("Sync failed.");
         }
     };
 
     return (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 relative">
-
-                {/* Close Button */}
                 <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
                     <X size={24} />
                 </button>
@@ -67,10 +67,9 @@ export default function ScholarSyncModal({ isOpen, onClose, onSuccess }) {
                     Sync Google Scholar
                 </h2>
                 <p className="text-sm text-gray-500 mb-6">
-                    Paste your profile URL. We will extract your ID and import all your papers automatically.
+                    Paste your profile URL. We will import your papers and update your analytics.
                 </p>
 
-                {/* Input Area */}
                 <div className="space-y-4">
                     <div className="relative">
                         <LinkIcon className="absolute left-3 top-3.5 text-gray-400 h-5 w-5" />
@@ -84,19 +83,17 @@ export default function ScholarSyncModal({ isOpen, onClose, onSuccess }) {
                         />
                     </div>
 
-                    {/* Progress Logs */}
                     {logs.length > 0 && (
                         <div className="bg-gray-50 p-3 rounded-lg text-xs font-mono text-gray-600 space-y-1 border border-gray-200">
                             {logs.map((log, i) => (
                                 <div key={i} className="flex items-center gap-2">
-                                    <span className="w-1 h-1 bg-blue-500 rounded-full"></span>
+                                    <span className={`w-1.5 h-1.5 rounded-full ${log.includes("Error") ? "bg-red-500" : "bg-blue-500"}`}></span>
                                     {log}
                                 </div>
                             ))}
                         </div>
                     )}
 
-                    {/* Action Button */}
                     <button
                         onClick={handleSync}
                         disabled={status !== "idle"}
@@ -107,7 +104,7 @@ export default function ScholarSyncModal({ isOpen, onClose, onSuccess }) {
                     >
                         {status === "idle" && "Start Import"}
                         {status === "extracting" && <><Loader2 className="animate-spin" /> Found ID...</>}
-                        {status === "syncing" && <><Loader2 className="animate-spin" /> Importing Papers...</>}
+                        {status === "syncing" && <><Loader2 className="animate-spin" /> Syncing...</>}
                         {status === "success" && <><CheckCircle /> Done!</>}
                     </button>
                 </div>

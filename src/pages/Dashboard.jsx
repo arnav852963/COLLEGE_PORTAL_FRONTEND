@@ -2,100 +2,250 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { dashboardAPI } from "../api/dashboard";
 import ScholarSyncModal from "../components/dashboard/ScholarSyncModal";
-import { BookOpen, Star, CheckCircle, Clock, FileBarChart, Plus, RefreshCw } from "lucide-react";
-import toast from "react-hot-toast";
-import { Link } from "react-router-dom";
+import {
+    BookOpen, Quote, TrendingUp, Activity, RefreshCw,
+    ExternalLink, Mail, LayoutDashboard
+} from "lucide-react";
+import {
+    AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
+} from 'recharts';
 
 export default function Dashboard() {
     const { user } = useAuth();
-    const [stats, setStats] = useState({ papersCount: 0, starsCount: 0, publishedCount: 0, notPublishedCount: 0 });
     const [loading, setLoading] = useState(true);
-
-    // State for the Sync Modal
     const [isSyncOpen, setIsSyncOpen] = useState(false);
 
-    // Fetch stats logic (abstracted to reuse it)
+    // Stores the full response from 'userStats' controller
+    const [dashboardData, setDashboardData] = useState(null);
+
+    useEffect(() => {
+        fetchStats();
+    }, []);
+
     const fetchStats = async () => {
         try {
             const response = await dashboardAPI.getStats();
-            setStats(response.data.data);
+            // response.data.data contains { papersCount, userBio, userStats, etc. }
+            setDashboardData(response.data.data);
         } catch (err) {
-            console.error(err);
+            console.error("Failed to load dashboard", err);
         } finally {
             setLoading(false);
         }
     };
 
-    useEffect(() => { fetchStats(); }, []);
+    // Called immediately after Sync Modal finishes successfully
+    const handleSyncSuccess = (freshData) => {
+        // Merge fresh data into current state to update UI instantly
+        setDashboardData(prev => ({
+            ...prev,
+            // Fresh data from sync contains { stats, author, paperCount }
+            // We map this to match our Dashboard Controller structure:
+            userBio: freshData.author,
+            userStats: freshData.stats,
+            papersCount: freshData.paperCount,
+        }));
+        setIsSyncOpen(false);
+    };
+
+    // Helper to safely extract stats (citations, h-index)
+    // Logic matches the JSON structure you provided
+    const getExternalStat = (key, type = "all") => {
+        const table = dashboardData?.userStats?.table;
+        if (!table) return 0;
+        const item = table.find(obj => obj[key]);
+        return item ? item[key][type] : 0;
+    };
+
+    if (loading) return <div className="p-10 text-center text-gray-500">Loading Dashboard...</div>;
+
+    // CHECK: Does the user have Scholar Data stored?
+    // We check if 'userBio' exists and is not empty
+    const hasScholarData = dashboardData?.userBio && Object.keys(dashboardData.userBio).length > 0;
 
     return (
-        <div className="space-y-8 animate-fade-in relative">
+        <div className="space-y-8 animate-fade-in pb-10">
 
-            {/* 1. Header Section */}
+            {/* 1. HEADER */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-800">
-                        Welcome back, {user?.fullName?.split(" ")[0]}! 👋
+                        Research Analytics
                     </h1>
-                    <p className="text-gray-500 mt-1">Manage your research portfolio.</p>
+                    <p className="text-gray-500 text-sm">
+                        Welcome back, {user?.fullName?.split(" ")[0]}
+                    </p>
                 </div>
 
-                <div className="flex gap-3">
-                    {/* THE NEW SYNC BUTTON */}
-                    <button
-                        onClick={() => setIsSyncOpen(true)}
-                        className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition shadow-sm"
-                    >
-                        <RefreshCw size={18} /> Sync Scholar
-                    </button>
-
-                    <button className="flex items-center gap-2 bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50 transition shadow-sm">
-                        <FileBarChart size={18} /> Report
-                    </button>
-                </div>
+                <button
+                    onClick={() => setIsSyncOpen(true)}
+                    className="flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-xl hover:bg-blue-700 transition shadow-lg shadow-blue-500/20"
+                >
+                    <RefreshCw size={18} />
+                    {hasScholarData ? "Update Data" : "Sync Scholar Profile"}
+                </button>
             </div>
 
-            {/* 2. Stats Grid (Same as before) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <StatCard title="Total Papers" value={stats.papersCount} icon={<BookOpen className="text-blue-600" />} color="bg-blue-50 border-blue-200" />
-                <StatCard title="Total Stars" value={stats.starsCount} icon={<Star className="text-yellow-500" />} color="bg-yellow-50 border-yellow-200" />
-                <StatCard title="Published" value={stats.publishedCount} icon={<CheckCircle className="text-green-600" />} color="bg-green-50 border-green-200" />
-                <StatCard title="Pending" value={stats.notPublishedCount} icon={<Clock className="text-orange-600" />} color="bg-orange-50 border-orange-200" />
-            </div>
-
-            {/* 3. Helper Text if empty */}
-            {stats.papersCount === 0 && (
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-2">No papers found?</h3>
-                    <p className="text-gray-500 mb-4">Click the "Sync Scholar" button above to import your work automatically.</p>
-                    <button onClick={() => setIsSyncOpen(true)} className="text-blue-600 font-medium hover:underline">
-                        Open Sync Tool &rarr;
-                    </button>
+            {/* 2. EMPTY STATE (Show if no userBio in DB) */}
+            {!hasScholarData && (
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-100 p-12 text-center">
+                    <div className="max-w-md mx-auto">
+                        <div className="bg-white p-4 rounded-full shadow-sm w-fit mx-auto mb-6">
+                            <LayoutDashboard size={32} className="text-blue-600" />
+                        </div>
+                        <h2 className="text-xl font-bold text-gray-800 mb-3">Your dashboard is empty</h2>
+                        <p className="text-gray-600 mb-8 leading-relaxed">
+                            Sync your Google Scholar profile to automatically import papers, generate citation graphs, and calculate your h-index.
+                        </p>
+                        <button onClick={() => setIsSyncOpen(true)} className="text-blue-600 font-semibold hover:underline">
+                            Start Synchronization &rarr;
+                        </button>
+                    </div>
                 </div>
             )}
 
-            {/* MODAL COMPONENT */}
+            {/* 3. FULL DASHBOARD (Show if userBio exists) */}
+            {hasScholarData && (
+                <>
+                    {/* A. Profile Card */}
+                    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col md:flex-row gap-6 items-start">
+                        <img
+                            src={dashboardData.userBio.thumbnail}
+                            alt="Profile"
+                            className="w-24 h-24 rounded-full border-4 border-blue-50 object-cover"
+                        />
+                        <div className="flex-1">
+                            <h2 className="text-2xl font-bold text-gray-900">{dashboardData.userBio.name}</h2>
+                            <p className="text-gray-600 font-medium mb-2">{dashboardData.userBio.affiliations}</p>
+
+                            <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-4">
+                                <div className="flex items-center gap-1"><Mail size={14}/> {dashboardData.userBio.email}</div>
+                                {dashboardData.userBio.website && (
+                                    <a href={dashboardData.userBio.website} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-blue-600 hover:underline">
+                                        <ExternalLink size={14}/> Google Scholar Profile
+                                    </a>
+                                )}
+                            </div>
+
+                            {/* Interests */}
+                            <div className="flex flex-wrap gap-2">
+                                {dashboardData.userBio.interests?.map((interest, i) => (
+                                    <span key={i} className="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full font-medium">
+                      {interest.title}
+                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* B. Metrics Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        {/* 1. Total Citations (From Google Scholar) */}
+                        <MetricCard
+                            label="Total Citations"
+                            value={getExternalStat("citations", "all")}
+                            subValue={`+${getExternalStat("citations", "since_2020")} since 2020`}
+                            icon={<Quote size={20} className="text-blue-600"/>}
+                            color="blue"
+                        />
+                        {/* 2. Total Papers (From Internal DB Count) */}
+                        <MetricCard
+                            label="Total Papers"
+                            value={dashboardData.papersCount || 0}
+                            subValue="Stored in Library"
+                            icon={<BookOpen size={20} className="text-purple-600"/>}
+                            color="purple"
+                        />
+                        {/* 3. h-index (From Google Scholar) */}
+                        <MetricCard
+                            label="h-index"
+                            value={getExternalStat("h_index", "all")}
+                            subValue={`${getExternalStat("h_index", "since_2020")} since 2020`}
+                            icon={<Activity size={20} className="text-green-600"/>}
+                            color="green"
+                        />
+                        {/* 4. i10-index (From Google Scholar) */}
+                        <MetricCard
+                            label="i10-index"
+                            value={getExternalStat("i10_index", "all")}
+                            subValue={`${getExternalStat("i10_index", "since_2020")} since 2020`}
+                            icon={<TrendingUp size={20} className="text-orange-600"/>}
+                            color="orange"
+                        />
+                    </div>
+
+                    {/* C. Citations Graph */}
+                    {dashboardData.userStats?.graph && (
+                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-96">
+                            <h3 className="text-lg font-bold text-gray-800 mb-6">Citation Growth (Yearly)</h3>
+                            <ResponsiveContainer width="100%" height="85%">
+                                <AreaChart data={dashboardData.userStats.graph}>
+                                    <defs>
+                                        <linearGradient id="colorCit" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#2563eb" stopOpacity={0.3}/>
+                                            <stop offset="95%" stopColor="#2563eb" stopOpacity={0}/>
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb"/>
+                                    <XAxis
+                                        dataKey="year"
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tick={{fill: '#6b7280', fontSize: 12}}
+                                    />
+                                    <YAxis
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tick={{fill: '#6b7280', fontSize: 12}}
+                                    />
+                                    <Tooltip
+                                        contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}}
+                                    />
+                                    <Area
+                                        type="monotone"
+                                        dataKey="citations"
+                                        stroke="#2563eb"
+                                        strokeWidth={3}
+                                        fillOpacity={1}
+                                        fill="url(#colorCit)"
+                                    />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        </div>
+                    )}
+                </>
+            )}
+
+            {/* Sync Modal */}
             <ScholarSyncModal
                 isOpen={isSyncOpen}
                 onClose={() => setIsSyncOpen(false)}
-                onSuccess={() => {
-                    fetchStats(); // Refresh numbers after sync
-                    setIsSyncOpen(false);
-                }}
+                onSuccess={handleSyncSuccess}
             />
 
         </div>
     );
 }
 
-function StatCard({ title, value, icon, color }) {
+// Reusable Metric Card
+function MetricCard({ label, value, subValue, icon, color }) {
+    const colors = {
+        blue: "bg-blue-50 text-blue-700",
+        purple: "bg-purple-50 text-purple-700",
+        green: "bg-green-50 text-green-700",
+        orange: "bg-orange-50 text-orange-700",
+    };
+
     return (
-        <div className={`p-6 rounded-xl border ${color} shadow-sm flex items-center justify-between`}>
+        <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex items-start justify-between">
             <div>
-                <p className="text-sm font-medium text-gray-500">{title}</p>
-                <p className="text-3xl font-bold text-gray-800 mt-1">{value}</p>
+                <p className="text-sm font-medium text-gray-500 mb-1">{label}</p>
+                <h4 className="text-2xl font-bold text-gray-900">{value}</h4>
+                {subValue && <p className="text-xs text-gray-400 mt-1">{subValue}</p>}
             </div>
-            <div className="p-3 bg-white rounded-full shadow-sm">{icon}</div>
+            <div className={`p-3 rounded-lg ${colors[color] || colors.blue}`}>
+                {icon}
+            </div>
         </div>
     );
 }
