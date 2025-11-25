@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { paperAPI } from "../api/paper";
 import useDebounce from "../hooks/useDebounce";
+import AddToCollectionModal from "../components/library/AddToCollection.jsx";
 import {
     Search, X, FileText, Users, Book, LayoutGrid,
-    ExternalLink, Star, Trash2, Loader2
+    ExternalLink, Star, Trash2, Loader2, Heart, FolderPlus
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -12,6 +13,10 @@ export default function Library() {
     const [activeTab, setActiveTab] = useState("all");
     const [papers, setPapers] = useState([]);
     const [loading, setLoading] = useState(false);
+
+    // Modal State for adding to collection
+    const [collectionModalOpen, setCollectionModalOpen] = useState(false);
+    const [selectedPaperId, setSelectedPaperId] = useState(null);
 
     const [searchTerm, setSearchTerm] = useState("");
     const debouncedSearch = useDebounce(searchTerm, 500);
@@ -42,15 +47,37 @@ export default function Library() {
 
     const fetchByTab = async () => {
         setLoading(true);
+        setPapers([]); // Clear list for better UX while loading
         try {
             let response;
-            if (activeTab === "all") response = await paperAPI.getAllPapers();
-            else if (activeTab === "journal") response = await paperAPI.getJournals();
-            else if (activeTab === "conference") response = await paperAPI.getConferences();
-            else response = await paperAPI.getBookChapters();
+            let data = [];
 
-            setPapers(response.data.data || []);
+            if (activeTab === "all") {
+                response = await paperAPI.getAllPapers();
+                data = response.data.data || [];
+            }
+            else if (activeTab === "starred") {
+                // Special logic for Favorites tab: Extract inner array
+                response = await paperAPI.getStarred();
+                const userAgg = response.data.data;
+                data = (userAgg && userAgg[0]) ? userAgg[0].allStarPapers : [];
+            }
+            else if (activeTab === "journal") {
+                response = await paperAPI.getJournals();
+                data = response.data.data || [];
+            }
+            else if (activeTab === "conference") {
+                response = await paperAPI.getConferences();
+                data = response.data.data || [];
+            }
+            else if (activeTab === "book") {
+                response = await paperAPI.getBookChapters();
+                data = response.data.data || [];
+            }
+
+            setPapers(data);
         } catch (err) {
+            console.error("Fetch error:", err);
             setPapers([]);
         } finally {
             setLoading(false);
@@ -59,7 +86,7 @@ export default function Library() {
 
     // --- ACTIONS ---
     const handleDelete = async (id) => {
-        if(!window.confirm("Delete this paper?")) return;
+        if (!window.confirm("Delete this paper?")) return;
         try {
             await paperAPI.deletePaper(id);
             setPapers(papers.filter(p => p._id !== id));
@@ -69,7 +96,7 @@ export default function Library() {
         }
     };
 
-    // ⚡️ FIXED: Logic to update UI instantly
+    // ⚡️ FIXED: Logic to update UI instantly (Optimistic UI)
     const handleStar = async (id) => {
         // 1. Optimistic Update: Find the paper and flip its 'isStarred' boolean immediately
         const updatedPapers = papers.map((p) =>
@@ -80,6 +107,11 @@ export default function Library() {
         // Check what the new state is to show the right toast
         const isNowStarred = updatedPapers.find(p => p._id === id)?.isStarred;
 
+        // Optional: If in "Favorites" tab and unstarring, remove it immediately
+        if (activeTab === "starred" && !isNowStarred) {
+            setPapers(prev => prev.filter(p => p._id !== id));
+        }
+
         try {
             // 2. Call Backend
             await paperAPI.toggleStar(id);
@@ -89,6 +121,11 @@ export default function Library() {
             setPapers(papers); // Revert to old state
             toast.error("Action failed");
         }
+    };
+
+    const openCollectionModal = (id) => {
+        setSelectedPaperId(id);
+        setCollectionModalOpen(true);
     };
 
     const clearSearch = () => {
@@ -130,15 +167,16 @@ export default function Library() {
 
             {/* 2. TABS */}
             {!debouncedSearch && (
-                <div className="flex p-1 space-x-1 bg-gray-100/80 rounded-xl w-fit backdrop-blur-sm">
-                    <TabButton active={activeTab === "all"} onClick={() => setActiveTab("all")} label="All Papers" icon={<LayoutGrid size={16}/>} />
-                    <TabButton active={activeTab === "journal"} onClick={() => setActiveTab("journal")} label="Journals" icon={<FileText size={16}/>} />
-                    <TabButton active={activeTab === "conference"} onClick={() => setActiveTab("conference")} label="Conferences" icon={<Users size={16}/>} />
-                    <TabButton active={activeTab === "book"} onClick={() => setActiveTab("book")} label="Chapters" icon={<Book size={16}/>} />
+                <div className="flex p-1 space-x-1 bg-gray-100/80 rounded-xl w-fit backdrop-blur-sm overflow-x-auto">
+                    <TabButton active={activeTab === "all"} onClick={() => setActiveTab("all")} label="All Papers" icon={<LayoutGrid size={16} />} />
+                    <TabButton active={activeTab === "starred"} onClick={() => setActiveTab("starred")} label="Favorites" icon={<Heart size={16} />} />
+                    <TabButton active={activeTab === "journal"} onClick={() => setActiveTab("journal")} label="Journals" icon={<FileText size={16} />} />
+                    <TabButton active={activeTab === "conference"} onClick={() => setActiveTab("conference")} label="Conferences" icon={<Users size={16} />} />
+                    <TabButton active={activeTab === "book"} onClick={() => setActiveTab("book")} label="Chapters" icon={<Book size={16} />} />
                 </div>
             )}
 
-            {/* 3. SEARCH STATUS */}
+            {/* 3. RESULTS STATUS */}
             {debouncedSearch && (
                 <div className="text-sm text-gray-500 font-medium px-1">
                     Showing results for <span className="text-gray-900">"{debouncedSearch}"</span>
@@ -153,7 +191,12 @@ export default function Library() {
                 </div>
             ) : papers.length === 0 ? (
                 <div className="py-20 text-center bg-white rounded-2xl border border-dashed border-gray-300">
-                    <p className="text-gray-500 text-lg">No papers found.</p>
+                    <p className="text-gray-500 text-lg capitalize">
+                        {activeTab === 'starred' ? 'No favorites yet.' : 'No papers found.'}
+                    </p>
+                    {activeTab === 'starred' && (
+                        <p className="text-sm text-gray-400 mt-2">Star papers in the 'All Papers' tab to see them here.</p>
+                    )}
                 </div>
             ) : (
                 <div className="grid grid-cols-1 gap-4">
@@ -163,10 +206,19 @@ export default function Library() {
                             paper={paper}
                             onDelete={handleDelete}
                             onStar={handleStar}
+                            onAddToCollection={() => openCollectionModal(paper._id)} // Pass handler to card
                         />
                     ))}
                 </div>
             )}
+
+            {/* COLLECTION MODAL */}
+            <AddToCollectionModal
+                isOpen={collectionModalOpen}
+                onClose={() => setCollectionModalOpen(false)}
+                paperId={selectedPaperId}
+            />
+
         </div>
     );
 }
@@ -178,7 +230,7 @@ function TabButton({ active, onClick, label, icon }) {
         <button
             onClick={onClick}
             className={`
-        flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200
+        flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 whitespace-nowrap
         ${active
                 ? "bg-white text-blue-600 shadow-sm ring-1 ring-black/5"
                 : "text-gray-500 hover:text-gray-900 hover:bg-white/60"
@@ -191,7 +243,7 @@ function TabButton({ active, onClick, label, icon }) {
     );
 }
 
-function PaperCard({ paper, onDelete, onStar }) {
+function PaperCard({ paper, onDelete, onStar, onAddToCollection }) {
     return (
         <div className="group relative bg-white p-5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:border-blue-200 transition-all duration-200 flex flex-col sm:flex-row gap-4">
 
@@ -203,8 +255,8 @@ function PaperCard({ paper, onDelete, onStar }) {
                             paper.classifiedAs === 'conference' ? 'bg-blue-50 text-blue-700' :
                                 'bg-orange-50 text-orange-700'
                         }`}>
-               {paper.classifiedAs}
-             </span>
+                            {paper.classifiedAs}
+                        </span>
                     )}
                     {paper.tag?.map((t, i) => (
                         <span key={i} className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-md font-medium">#{t}</span>
@@ -241,18 +293,25 @@ function PaperCard({ paper, onDelete, onStar }) {
                     <ExternalLink size={18} />
                 </a>
 
-                {/* ⚡️ FIXED: Button now reacts to 'paper.isStarred' */}
+                {/* STAR BUTTON: Uses paper.isStarred */}
                 <button
                     onClick={() => onStar(paper._id)}
-                    className={`p-2 rounded-lg transition-colors ${
-                        paper.isStarred
-                            ? "text-yellow-500 bg-yellow-50 hover:bg-yellow-100"
-                            : "text-gray-400 hover:text-yellow-500 hover:bg-yellow-50"
+                    className={`p-2 rounded-lg transition-colors ${paper.isStarred
+                        ? "text-yellow-500 bg-yellow-50 hover:bg-yellow-100"
+                        : "text-gray-400 hover:text-yellow-500 hover:bg-yellow-50"
                     }`}
                     title={paper.isStarred ? "Remove Star" : "Add Star"}
                 >
-                    {/* Fill the star if active */}
                     <Star size={18} fill={paper.isStarred ? "currentColor" : "none"} />
+                </button>
+
+                {/* ADD TO COLLECTION BUTTON */}
+                <button
+                    onClick={onAddToCollection}
+                    className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                    title="Add to Collection"
+                >
+                    <FolderPlus size={18} />
                 </button>
 
                 <button

@@ -10,6 +10,8 @@ export const paperAPI = {
     getConferences: () => api.get("/papers/getUserConferencePapers"),
     getBookChapters: () => api.get("/papers/getUserBookChapter"),
 
+    getStarred: () => api.get("/star/getAllStarPapers"),
+
 
     deletePaper: (id) => api.delete(`/papers/deletePaper/${id}`),
     toggleStar: (id) => api.post(`/star/toggleStar/${id}`),

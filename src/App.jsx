@@ -13,7 +13,8 @@ import Sidebar from "./components/layout/Sidebar";
 import Signup from './pages/Signup';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
-import Library from './pages/Library'; // <--- Added Library Import
+import Library from './pages/Library';
+import Collections from './pages/Collections'; // <--- Import Collections
 
 // The "Shell" Layout (Sidebar + Content)
 // This wraps pages that need the Sidebar
@@ -58,15 +59,16 @@ function App() {
                         </ProtectedRoute>
                     } />
 
-                    {/* 3. Future Pages (Placeholders so Sidebar links don't crash) */}
+                    {/* 3. Collections Page */}
                     <Route path="/collections" element={
                         <ProtectedRoute>
                             <AppLayout>
-                                <div className="p-10 text-gray-500 text-center">Collections Page (Coming Soon)</div>
+                                <Collections />
                             </AppLayout>
                         </ProtectedRoute>
                     } />
 
+                    {/* 4. Future Pages (Placeholders so Sidebar links don't crash) */}
                     <Route path="/projects" element={
                         <ProtectedRoute>
                             <AppLayout>
