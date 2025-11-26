@@ -14,10 +14,16 @@ import Signup from './pages/Signup';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Library from './pages/Library';
-import Collections from './pages/Collections'; // <--- Import Collections
+import Collections from './pages/Collections';
+import Patents from "./pages/Patents";
+import Projects from "./pages/Projects";
+import Settings from "./pages/Settings";
+
+// Admin Pages
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminUserView from './pages/admin/AdminUserView';
 
 // The "Shell" Layout (Sidebar + Content)
-// This wraps pages that need the Sidebar
 const AppLayout = ({ children }) => (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
         <Sidebar />
@@ -31,65 +37,42 @@ function App() {
     return (
         <AuthProvider>
             <Router>
-                {/* Toast Notifications (Top Right) */}
                 <Toaster position="top-right" />
-
                 <Routes>
                     {/* --- PUBLIC ROUTES --- */}
                     <Route path="/signup" element={<Signup />} />
                     <Route path="/login" element={<Login />} />
 
-                    {/* --- PROTECTED ROUTES (Require Login) --- */}
+                    {/* --- PROTECTED ROUTES (User) --- */}
 
-                    {/* 1. Dashboard */}
-                    <Route path="/dashboard" element={
+                    <Route path="/dashboard" element={<ProtectedRoute><AppLayout><Dashboard /></AppLayout></ProtectedRoute>} />
+                    <Route path="/library" element={<ProtectedRoute><AppLayout><Library /></AppLayout></ProtectedRoute>} />
+                    <Route path="/collections" element={<ProtectedRoute><AppLayout><Collections /></AppLayout></ProtectedRoute>} />
+                    <Route path="/patents" element={<ProtectedRoute><AppLayout><Patents /></AppLayout></ProtectedRoute>} />
+                    <Route path="/projects" element={<ProtectedRoute><AppLayout><Projects /></AppLayout></ProtectedRoute>} />
+                    <Route path="/settings" element={<ProtectedRoute><AppLayout><Settings /></AppLayout></ProtectedRoute>} />
+
+                    {/* --- ADMIN ROUTES --- */}
+                    {/* In a real app, you might want a dedicated <ProtectedAdminRoute> wrapper to check user.isAdmin */}
+                    {/* For now, standard ProtectedRoute works (backend will block unauthorized requests) */}
+                    <Route path="/admin" element={
                         <ProtectedRoute>
                             <AppLayout>
-                                <Dashboard />
+                                <AdminDashboard />
                             </AppLayout>
                         </ProtectedRoute>
                     } />
 
-                    {/* 2. My Library */}
-                    <Route path="/library" element={
+                    <Route path="/admin/user/:userId" element={
                         <ProtectedRoute>
                             <AppLayout>
-                                <Library />
-                            </AppLayout>
-                        </ProtectedRoute>
-                    } />
-
-                    {/* 3. Collections Page */}
-                    <Route path="/collections" element={
-                        <ProtectedRoute>
-                            <AppLayout>
-                                <Collections />
-                            </AppLayout>
-                        </ProtectedRoute>
-                    } />
-
-                    {/* 4. Future Pages (Placeholders so Sidebar links don't crash) */}
-                    <Route path="/projects" element={
-                        <ProtectedRoute>
-                            <AppLayout>
-                                <div className="p-10 text-gray-500 text-center">Projects Page (Coming Soon)</div>
-                            </AppLayout>
-                        </ProtectedRoute>
-                    } />
-
-                    <Route path="/patents" element={
-                        <ProtectedRoute>
-                            <AppLayout>
-                                <div className="p-10 text-gray-500 text-center">Patents Page (Coming Soon)</div>
+                                <AdminUserView />
                             </AppLayout>
                         </ProtectedRoute>
                     } />
 
                     {/* --- FALLBACK --- */}
-                    {/* Redirect root to Dashboard (which will redirect to Login if not auth) */}
                     <Route path="/" element={<Navigate to="/dashboard" replace />} />
-
-                    {/* Catch-all: Redirect unknown URLs to Login */}
                     <Route path="*" element={<Navigate to="/login" replace />} />
                 </Routes>
             </Router>

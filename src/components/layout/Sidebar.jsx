@@ -1,20 +1,16 @@
 import React from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import {
-    LayoutDashboard,
-    BookOpen, // For Papers
-    Folders,  // For Collections
-    Briefcase, // For Projects
-    FileBadge, // For Patents
-    LogOut,
-    Settings
+    LayoutDashboard, BookOpen, Folders, Briefcase, FileBadge,
+    LogOut, Settings, Shield
 } from "lucide-react";
 
 export default function Sidebar() {
     const { user, logout } = useAuth();
 
-    const navItems = [
+    // Standard links for Professors/Regular Users
+    const userNavItems = [
         { name: "Dashboard", path: "/dashboard", icon: <LayoutDashboard size={20} /> },
         { name: "My Library", path: "/library", icon: <BookOpen size={20} /> },
         { name: "Collections", path: "/collections", icon: <Folders size={20} /> },
@@ -27,17 +23,16 @@ export default function Sidebar() {
 
             {/* Top Section */}
             <div>
-                {/* Logo Area */}
                 <div className="h-16 flex items-center px-6 border-b border-gray-100">
-                    {/* Fallback text if logo fails, similar to Signup */}
-                    <span className="text-xl font-bold text-gray-800 tracking-tight">
+           <span className="text-xl font-bold text-gray-800 tracking-tight">
              <span className="text-blue-600">Research</span>OS
            </span>
                 </div>
 
-                {/* Navigation Links */}
                 <nav className="p-4 space-y-1">
-                    {navItems.map((item) => (
+
+                    {/* CONDITIONAL RENDERING: Only show user links if NOT admin */}
+                    {!user?.isAdmin && userNavItems.map((item) => (
                         <NavLink
                             key={item.path}
                             to={item.path}
@@ -53,30 +48,58 @@ export default function Sidebar() {
                             {item.name}
                         </NavLink>
                     ))}
+
+                    {/* Admin Link (Only for Admin) */}
+                    {user?.isAdmin && (
+                        <NavLink
+                            to="/admin"
+                            className={({ isActive }) =>
+                                `flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                                    isActive ? "bg-purple-50 text-purple-600" : "text-gray-600 hover:bg-gray-50"
+                                }`
+                            }
+                        >
+                            <Shield size={20} />
+                            Admin Panel
+                        </NavLink>
+                    )}
                 </nav>
             </div>
 
-            {/* Bottom Section: User Profile & Logout */}
-            <div className="p-4 border-t border-gray-100">
-                <div className="flex items-center gap-3 mb-4 px-2">
+            {/* Bottom Section */}
+            <div className="p-4 border-t border-gray-100 space-y-1">
+                <NavLink
+                    to="/settings"
+                    className={({ isActive }) =>
+                        `flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                            isActive ? "bg-gray-100 text-gray-900" : "text-gray-600 hover:bg-gray-50"
+                        }`
+                    }
+                >
+                    <Settings size={20} />
+                    Settings
+                </NavLink>
+
+                <div className="my-2 border-t border-gray-100"></div>
+
+                <div className="flex items-center gap-3 px-2 py-2">
                     <img
                         src={user?.avatar || "https://via.placeholder.com/40"}
                         alt="User"
-                        className="w-10 h-10 rounded-full object-cover border border-gray-200"
+                        className="w-8 h-8 rounded-full object-cover border border-gray-200"
                     />
-                    <div className="overflow-hidden">
+                    <div className="overflow-hidden flex-1">
                         <p className="text-sm font-semibold text-gray-800 truncate">{user?.fullName}</p>
                         <p className="text-xs text-gray-500 truncate">{user?.email}</p>
                     </div>
+                    <button
+                        onClick={logout}
+                        className="text-gray-400 hover:text-red-600 transition p-1"
+                        title="Sign Out"
+                    >
+                        <LogOut size={18} />
+                    </button>
                 </div>
-
-                <button
-                    onClick={logout}
-                    className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                >
-                    <LogOut size={18} />
-                    Sign Out
-                </button>
             </div>
         </aside>
     );
