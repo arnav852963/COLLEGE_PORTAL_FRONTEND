@@ -8,17 +8,14 @@ import {
 import toast from "react-hot-toast";
 
 export default function Patents() {
-    // --- STATE ---
-    const [view, setView] = useState("list"); // 'list' or 'detail'
+    const [view, setView] = useState("list");
     const [patents, setPatents] = useState([]);
     const [selectedPatent, setSelectedPatent] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Modal State
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [editingPatent, setEditingPatent] = useState(null); // If not null, we are editing this patent
+    const [editingPatent, setEditingPatent] = useState(null);
 
-    // --- INITIAL LOAD ---
     useEffect(() => {
         fetchPatents();
     }, []);
@@ -35,9 +32,6 @@ export default function Patents() {
         }
     };
 
-    // --- ACTIONS ---
-
-    // 1. View Details
     const handleViewDetails = async (id) => {
         setLoading(true);
         try {
@@ -51,7 +45,6 @@ export default function Patents() {
         }
     };
 
-    // 2. Delete Patent
     const handleDelete = async (id, e) => {
         if (e) e.stopPropagation();
         if (!window.confirm("Delete this patent record?")) return;
@@ -68,26 +61,21 @@ export default function Patents() {
         }
     };
 
-    // 3. Open Edit Modal
     const handleEdit = (patent, e) => {
         if (e) e.stopPropagation();
         setEditingPatent(patent);
         setIsModalOpen(true);
     };
 
-    // 4. Open Create Modal
     const handleCreate = () => {
-        setEditingPatent(null); // Clear edit state
+        setEditingPatent(null);
         setIsModalOpen(true);
     };
-
-    // --- RENDER HELPERS ---
 
     if (loading && view === "list" && patents.length === 0) {
         return <div className="p-20 text-center text-gray-400">Loading records...</div>;
     }
 
-    // Helper for secure PDF links
     const getDownloadUrl = (url) => {
         if (!url) return "";
         let secureUrl = url.replace("http://", "https://");
@@ -97,7 +85,6 @@ export default function Patents() {
     return (
         <div className="space-y-8 animate-fade-in pb-10 max-w-7xl mx-auto">
 
-            {/* --- HEADER --- */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-gray-100 pb-6">
                 <div>
                     {view === "detail" ? (
@@ -128,7 +115,6 @@ export default function Patents() {
                 )}
             </div>
 
-            {/* --- VIEW: LIST (GRID) --- */}
             {view === "list" && (
                 <>
                     {patents.length === 0 ? (
@@ -199,10 +185,8 @@ export default function Patents() {
                 </>
             )}
 
-            {/* --- VIEW: DETAIL --- */}
             {view === "detail" && selectedPatent && (
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                    {/* Status Banner */}
                     <div className="bg-gray-50 px-8 py-6 border-b border-gray-100 flex justify-between items-center">
                         <div className="flex items-center gap-4">
                             <div className="p-3 bg-white rounded-xl shadow-sm text-orange-600">
@@ -240,7 +224,6 @@ export default function Patents() {
                         </div>
                     </div>
 
-                    {/* Details Content */}
                     <div className="p-8 space-y-8">
                         <div>
                             <h2 className="text-2xl font-bold text-gray-900 mb-4 leading-tight">{selectedPatent.title}</h2>
@@ -282,18 +265,15 @@ export default function Patents() {
                 </div>
             )}
 
-            {/* --- CREATE/EDIT MODAL --- */}
             {isModalOpen && (
                 <PatentFormModal
-                    patentToEdit={editingPatent} // Pass the patent if editing
+                    patentToEdit={editingPatent}
                     onClose={() => setIsModalOpen(false)}
                     onSuccess={(savedPatent) => {
                         if (editingPatent) {
-                            // Update logic: Replace in list
                             setPatents(prev => prev.map(p => p._id === savedPatent._id ? savedPatent : p));
                             if (selectedPatent?._id === savedPatent._id) setSelectedPatent(savedPatent);
                         } else {
-                            // Create logic: Add to list
                             setPatents([savedPatent, ...patents]);
                         }
                         setIsModalOpen(false);
@@ -303,8 +283,6 @@ export default function Patents() {
         </div>
     );
 }
-
-// --- SUB-COMPONENTS ---
 
 function StatusBadge({ status }) {
     const styles = {
@@ -322,7 +300,6 @@ function StatusBadge({ status }) {
     );
 }
 
-// Unified Modal for Create & Edit
 function PatentFormModal({ patentToEdit, onClose, onSuccess }) {
     const isEdit = !!patentToEdit;
 
@@ -332,7 +309,6 @@ function PatentFormModal({ patentToEdit, onClose, onSuccess }) {
     const [file, setFile] = useState(null);
     const [loading, setLoading] = useState(false);
 
-    // Populate form if editing
     useEffect(() => {
         if (isEdit && patentToEdit) {
             setFormData({
@@ -354,12 +330,9 @@ function PatentFormModal({ patentToEdit, onClose, onSuccess }) {
             let response;
 
             if (isEdit) {
-                // UPDATE LOGIC (PUT)
-                // Send JSON body for updates (assuming file update not supported/needed for metadata edit)
                 response = await patentAPI.update(patentToEdit._id, formData);
                 toast.success("Patent Updated!");
             } else {
-                // CREATE LOGIC (POST FormData)
                 if (!file) {
                     toast.error("Please upload the patent document (PDF)");
                     setLoading(false);
@@ -405,7 +378,6 @@ function PatentFormModal({ patentToEdit, onClose, onSuccess }) {
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Application #</label>
-                            {/* App # is usually unique/immutable, disable if editing */}
                             <input required name="applicationNumber" type="text" className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none disabled:bg-gray-100 disabled:text-gray-500"
                                    value={formData.applicationNumber} onChange={handleChange} disabled={isEdit} />
                         </div>
@@ -439,7 +411,6 @@ function PatentFormModal({ patentToEdit, onClose, onSuccess }) {
                                value={formData.tags} onChange={handleChange} />
                     </div>
 
-                    {/* File Upload - Only show on Create because Update doesn't support file replacement in this flow */}
                     {!isEdit && (
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Patent Document (PDF)</label>

@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import { authAPI } from "../api/auth";
-import { useAuth } from "../context/AuthContext"; // <--- 1. Import Auth Context
+import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 import { Mail, Lock, ArrowRight } from "lucide-react";
 
 export default function Login() {
     const navigate = useNavigate();
-    const { login } = useAuth(); // <--- 2. Get the login function from context
+    const { login } = useAuth();
     const [loading, setLoading] = useState(false);
 
     const [formData, setFormData] = useState({
@@ -31,8 +31,6 @@ export default function Login() {
         try {
             const response = await authAPI.login(formData);
 
-            // FIX: Use the 'login' function from Context.
-            // This updates the App state AND sets localStorage for you.
             login(response.data.data.user);
 
             toast.success("Welcome back!");
@@ -50,7 +48,6 @@ export default function Login() {
             setLoading(true);
             const response = await authAPI.googleLogin(credentialResponse.credential);
 
-            // FIX: Use context here too
             const userData = response.data.data.user || response.data.data;
             login(userData);
 
@@ -136,7 +133,6 @@ export default function Login() {
                         </button>
                     </form>
 
-                    {/* Footer */}
                     <div className="text-center mt-8">
                         <p className="text-sm text-gray-500">
                             Don't have an account? <Link to="/signup" className="text-blue-600 font-semibold hover:underline">Register here</Link>

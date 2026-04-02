@@ -6,9 +6,8 @@ import toast from "react-hot-toast";
 export default function AddToCollectionModal({ paperId, isOpen, onClose }) {
     const [groups, setGroups] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [addingTo, setAddingTo] = useState(null); // Track which group is being added to
+    const [addingTo, setAddingTo] = useState(null);
 
-    // Fetch groups when modal opens
     useEffect(() => {
         if (isOpen) {
             fetchGroups();
@@ -31,13 +30,11 @@ export default function AddToCollectionModal({ paperId, isOpen, onClose }) {
     const handleAddToGroup = async (groupId) => {
         setAddingTo(groupId);
         try {
-            // Calls your backend: patch("/addPaper?groupId=...&paperId=...")
             await groupAPI.addPaperToGroup(groupId, paperId);
             toast.success("Added to collection");
             onClose();
         } catch (err) {
             console.error(err);
-            // Check for specific error like "Paper already in group" if backend sends it
             const msg = err.response?.data?.message || "Failed to add paper";
             toast.error(msg);
         } finally {
@@ -51,7 +48,6 @@ export default function AddToCollectionModal({ paperId, isOpen, onClose }) {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
             <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden flex flex-col max-h-[80vh]">
 
-                {/* Header */}
                 <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-white sticky top-0 z-10">
                     <h3 className="font-bold text-gray-800 text-lg">Add to Collection</h3>
                     <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition">
@@ -59,7 +55,6 @@ export default function AddToCollectionModal({ paperId, isOpen, onClose }) {
                     </button>
                 </div>
 
-                {/* List */}
                 <div className="overflow-y-auto p-4 space-y-2">
                     {loading ? (
                         <div className="py-8 text-center text-gray-400 flex justify-center">
@@ -96,7 +91,6 @@ export default function AddToCollectionModal({ paperId, isOpen, onClose }) {
                     )}
                 </div>
 
-                {/* Footer tip */}
                 <div className="p-3 bg-gray-50 text-center text-xs text-gray-400 border-t border-gray-100">
                     Select a folder to add this paper
                 </div>

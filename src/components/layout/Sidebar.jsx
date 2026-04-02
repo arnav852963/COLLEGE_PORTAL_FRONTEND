@@ -4,7 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 
 import {
     LayoutDashboard, BookOpen, Folders, Briefcase, FileBadge,
-    LogOut, Settings, Shield, Moon, Sun
+    LogOut, Settings, Shield
 } from "lucide-react";
 
 export default function Sidebar() {
@@ -22,7 +22,6 @@ export default function Sidebar() {
     return (
         <aside className="w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 h-screen flex flex-col justify-between shadow-sm z-20 transition-colors duration-200">
 
-            {/* Top Section */}
             <div>
                 <div className="h-16 flex items-center px-6 border-b border-gray-100 dark:border-gray-800">
            <span className="text-xl font-bold text-gray-800 dark:text-gray-100 tracking-tight">
@@ -31,7 +30,6 @@ export default function Sidebar() {
                 </div>
 
                 <nav className="p-4 space-y-1">
-                    {/* USER LINKS: Hide if Admin */}
                     {!user?.isAdmin && navItems.map((item) => (
                         <NavLink
                             key={item.path}
@@ -49,7 +47,6 @@ export default function Sidebar() {
                         </NavLink>
                     ))}
 
-                    {/* ADMIN LINK: Show only if Admin */}
                     {user?.isAdmin && (
                         <NavLink
                             to="/admin"
@@ -68,10 +65,7 @@ export default function Sidebar() {
                 </nav>
             </div>
 
-            {/* Bottom Section */}
             <div className="p-4 border-t border-gray-100 dark:border-gray-800 space-y-1">
-
-                
 
                 <NavLink
                     to="/settings"

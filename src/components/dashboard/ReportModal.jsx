@@ -13,7 +13,6 @@ import toast from "react-hot-toast";
 export default function ReportModal({ isOpen, onClose, onGenerated }) {
     const [loading, setLoading] = useState(false);
 
-    // Default field selections
     const [options, setOptions] = useState({
         title: true,
         authors: true,
@@ -32,15 +31,12 @@ export default function ReportModal({ isOpen, onClose, onGenerated }) {
     const handleGenerate = async () => {
         setLoading(true);
         try {
-            // Call POST /users/report
             const response = await userAPI.generateReport(options);
 
-            // Create blob URL
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement("a");
             link.href = url;
 
-            // File name
             link.download = `Research_Report_${new Date()
                 .toISOString()
                 .split("T")[0]}.docx`;
@@ -51,10 +47,8 @@ export default function ReportModal({ isOpen, onClose, onGenerated }) {
             window.URL.revokeObjectURL(url);
             link.remove();
 
-            // Success toast
             toast.success("Report downloaded successfully!");
 
-            // Notify Dashboard for "last generated" timestamp
             if (onGenerated) onGenerated();
 
             onClose();
@@ -71,10 +65,8 @@ export default function ReportModal({ isOpen, onClose, onGenerated }) {
 
     return (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
-            {/* Modal Container with Fade + Scale Animation */}
             <div className="bg-white rounded-2xl w-full max-w-md p-6 relative shadow-2xl animate-scale-in">
 
-                {/* Close Button */}
                 <button
                     onClick={onClose}
                     className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
@@ -82,7 +74,6 @@ export default function ReportModal({ isOpen, onClose, onGenerated }) {
                     <X size={24} />
                 </button>
 
-                {/* Heading */}
                 <h2 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
                     <FileText className="text-blue-600" /> Generate Report
                 </h2>
@@ -91,7 +82,6 @@ export default function ReportModal({ isOpen, onClose, onGenerated }) {
                     Select the fields you want to include in your Word document.
                 </p>
 
-                {/* Field Options */}
                 <div className="space-y-3 mb-8">
                     {Object.keys(options).map((key) => (
                         <button
@@ -115,7 +105,6 @@ export default function ReportModal({ isOpen, onClose, onGenerated }) {
                     ))}
                 </div>
 
-                {/* Generate Button */}
                 <button
                     onClick={handleGenerate}
                     disabled={loading}
@@ -129,7 +118,6 @@ export default function ReportModal({ isOpen, onClose, onGenerated }) {
                     Download .DOCX
                 </button>
 
-                {/* Optional Loading Overlay */}
                 {loading && (
                     <div className="absolute inset-0 bg-white/60 flex items-center justify-center rounded-2xl">
                         <Loader2 size={32} className="animate-spin text-gray-700" />
@@ -137,7 +125,6 @@ export default function ReportModal({ isOpen, onClose, onGenerated }) {
                 )}
             </div>
 
-            {/* Animations */}
             <style>{`
                 .animate-fade-in {
                     animation: fadeIn 0.2s ease-out;

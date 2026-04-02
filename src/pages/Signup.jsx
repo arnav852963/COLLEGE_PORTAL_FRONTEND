@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import { authAPI } from "../api/auth";
-import toast from "react-hot-toast"; // For nice notifications
+import toast from "react-hot-toast";
 import {
     User, Mail, Lock, Briefcase, BookOpen,
     Image as ImageIcon, CheckCircle, ArrowRight, ArrowLeft
@@ -11,11 +11,9 @@ import {
 export default function Signup() {
     const navigate = useNavigate();
 
-    // --- STATE ---
     const [currentStep, setCurrentStep] = useState(1);
     const [loading, setLoading] = useState(false);
 
-    // Form Data matching your Backend Model
     const [formData, setFormData] = useState({
         fullName: "",
         username: "",
@@ -28,11 +26,9 @@ export default function Signup() {
         isAdmin: false,
     });
 
-    // Files
     const [avatar, setAvatar] = useState(null);
     const [coverImage, setCoverImage] = useState(null);
 
-    // --- HANDLERS ---
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData({
@@ -46,7 +42,6 @@ export default function Signup() {
             setLoading(true);
             const response = await authAPI.googleLogin(credentialResponse.credential);
 
-            // Save user data
             localStorage.setItem("user", JSON.stringify(response.data.data));
 
             toast.success("Welcome! Signed in with Google.");
@@ -90,7 +85,6 @@ export default function Signup() {
 
         setLoading(true);
 
-        // Prepare FormData for Multer
         const submission = new FormData();
         Object.keys(formData).forEach((key) => submission.append(key, formData[key]));
         if (avatar) submission.append("avatar", avatar);
@@ -108,13 +102,11 @@ export default function Signup() {
         }
     };
 
-    // UI Helpers
     const inputClass = "w-full pl-10 pr-4 py-3 rounded-lg bg-gray-50 border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all text-gray-700 placeholder-gray-400";
     const iconClass = "absolute left-3 top-3.5 text-gray-400 h-5 w-5";
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-900 py-12 px-4 relative">
-            {/* Background */}
             <div className="absolute inset-0 z-0"
                  style={{
                      backgroundImage: "url('https://www.iiitnr.ac.in/sites/default/files/banner.jpg')",
@@ -124,7 +116,6 @@ export default function Signup() {
 
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg z-10 overflow-hidden relative flex flex-col">
 
-                {/* Progress Bar */}
                 <div className="h-1.5 bg-gray-100 w-full">
                     <div className="h-full bg-blue-600 transition-all duration-500" style={{ width: `${(currentStep / 4) * 100}%` }}></div>
                 </div>
@@ -135,7 +126,6 @@ export default function Signup() {
                         <p className="text-sm text-gray-500">Research Management Portal • IIIT-NR</p>
                     </div>
 
-                    {/* Google Button */}
                     {currentStep === 1 && (
                         <div className="mb-6 pb-6 border-b border-gray-100 flex flex-col items-center">
                             <GoogleLogin
@@ -147,10 +137,8 @@ export default function Signup() {
                         </div>
                     )}
 
-                    {/* --- STEPS --- */}
                     <div className="min-h-[300px]">
 
-                        {/* Step 1: Personal */}
                         {currentStep === 1 && (
                             <div className="space-y-4 animate-fade-in">
                                 <div className="relative"> <User className={iconClass} /> <input name="fullName" value={formData.fullName} onChange={handleChange} placeholder="Full Name" className={inputClass} autoFocus /> </div>
@@ -159,7 +147,6 @@ export default function Signup() {
                             </div>
                         )}
 
-                        {/* Step 2: Password */}
                         {currentStep === 2 && (
                             <div className="space-y-4 animate-fade-in">
                                 <div className="relative"> <Lock className={iconClass} /> <input name="password" type="password" value={formData.password} onChange={handleChange} placeholder="Password" className={inputClass} autoFocus /> </div>
@@ -167,7 +154,6 @@ export default function Signup() {
                             </div>
                         )}
 
-                        {/* Step 3: Professional */}
                         {currentStep === 3 && (
                             <div className="space-y-4 animate-fade-in">
                                 <div className="relative">
@@ -194,7 +180,6 @@ export default function Signup() {
                             </div>
                         )}
 
-                        {/* Step 4: Uploads */}
                         {currentStep === 4 && (
                             <div className="space-y-4 animate-fade-in">
                                 <div className="p-3 border-2 border-dashed border-gray-300 rounded-lg text-center">
@@ -215,7 +200,6 @@ export default function Signup() {
                         )}
                     </div>
 
-                    {/* Navigation */}
                     <div className="flex justify-between mt-8 pt-4 border-t border-gray-100">
                         {currentStep > 1 ? (
                             <button onClick={() => setCurrentStep(p => p - 1)} className="flex items-center text-gray-600 hover:text-gray-900">

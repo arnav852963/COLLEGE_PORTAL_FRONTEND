@@ -9,19 +9,16 @@ import {
 import toast from "react-hot-toast";
 
 export default function Library() {
-    // --- STATE ---
     const [activeTab, setActiveTab] = useState("all");
     const [papers, setPapers] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    // Modal State for adding to collection
     const [collectionModalOpen, setCollectionModalOpen] = useState(false);
     const [selectedPaperId, setSelectedPaperId] = useState(null);
 
     const [searchTerm, setSearchTerm] = useState("");
     const debouncedSearch = useDebounce(searchTerm, 500);
 
-    // --- EFFECT: Handle Data Fetching ---
     useEffect(() => {
         if (debouncedSearch) {
             performSearch();
@@ -30,7 +27,6 @@ export default function Library() {
         }
     }, [debouncedSearch, activeTab]);
 
-    // --- API CALLS ---
     const performSearch = async () => {
         setLoading(true);
         try {
@@ -47,7 +43,7 @@ export default function Library() {
 
     const fetchByTab = async () => {
         setLoading(true);
-        setPapers([]); // Clear list for better UX while loading
+        setPapers([]);
         try {
             let response;
             let data = [];
@@ -57,7 +53,6 @@ export default function Library() {
                 data = response.data.data || [];
             }
             else if (activeTab === "starred") {
-                // Special logic for Favorites tab: Extract inner array
                 response = await paperAPI.getStarred();
                 const userAgg = response.data.data;
                 data = (userAgg && userAgg[0]) ? userAgg[0].allStarPapers : [];
@@ -84,7 +79,6 @@ export default function Library() {
         }
     };
 
-    // --- ACTIONS ---
     const handleDelete = async (id) => {
         if (!window.confirm("Delete this paper?")) return;
         try {
@@ -96,29 +90,23 @@ export default function Library() {
         }
     };
 
-    // ⚡️ FIXED: Logic to update UI instantly (Optimistic UI)
     const handleStar = async (id) => {
-        // 1. Optimistic Update: Find the paper and flip its 'isStarred' boolean immediately
         const updatedPapers = papers.map((p) =>
             p._id === id ? { ...p, isStarred: !p.isStarred } : p
         );
         setPapers(updatedPapers);
 
-        // Check what the new state is to show the right toast
         const isNowStarred = updatedPapers.find(p => p._id === id)?.isStarred;
 
-        // Optional: If in "Favorites" tab and unstarring, remove it immediately
         if (activeTab === "starred" && !isNowStarred) {
             setPapers(prev => prev.filter(p => p._id !== id));
         }
 
         try {
-            // 2. Call Backend
             await paperAPI.toggleStar(id);
             toast.success(isNowStarred ? "Added to favorites" : "Removed from favorites");
         } catch (err) {
-            // 3. Rollback if backend fails
-            setPapers(papers); // Revert to old state
+            setPapers(papers);
             toast.error("Action failed");
         }
     };
@@ -135,7 +123,6 @@ export default function Library() {
     return (
         <div className="space-y-6 animate-fade-in pb-10 max-w-7xl mx-auto">
 
-            {/* 1. HEADER & SEARCH */}
             <div className="flex flex-col md:flex-row justify-between items-end gap-4 border-b border-gray-100 pb-6">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Library</h1>
@@ -165,7 +152,6 @@ export default function Library() {
                 </div>
             </div>
 
-            {/* 2. TABS */}
             {!debouncedSearch && (
                 <div className="flex p-1 space-x-1 bg-gray-100/80 rounded-xl w-fit backdrop-blur-sm overflow-x-auto">
                     <TabButton active={activeTab === "all"} onClick={() => setActiveTab("all")} label="All Papers" icon={<LayoutGrid size={16} />} />
@@ -176,14 +162,12 @@ export default function Library() {
                 </div>
             )}
 
-            {/* 3. RESULTS STATUS */}
             {debouncedSearch && (
                 <div className="text-sm text-gray-500 font-medium px-1">
                     Showing results for <span className="text-gray-900">"{debouncedSearch}"</span>
                 </div>
             )}
 
-            {/* 4. LIST */}
             {loading && !papers.length ? (
                 <div className="py-20 text-center text-gray-400 flex flex-col items-center">
                     <Loader2 className="h-8 w-8 animate-spin mb-2" />
@@ -206,13 +190,12 @@ export default function Library() {
                             paper={paper}
                             onDelete={handleDelete}
                             onStar={handleStar}
-                            onAddToCollection={() => openCollectionModal(paper._id)} // Pass handler to card
+                            onAddToCollection={() => openCollectionModal(paper._id)}
                         />
                     ))}
                 </div>
             )}
 
-            {/* COLLECTION MODAL */}
             <AddToCollectionModal
                 isOpen={collectionModalOpen}
                 onClose={() => setCollectionModalOpen(false)}
@@ -222,8 +205,6 @@ export default function Library() {
         </div>
     );
 }
-
-// --- SUB-COMPONENTS ---
 
 function TabButton({ active, onClick, label, icon }) {
     return (
@@ -293,7 +274,6 @@ function PaperCard({ paper, onDelete, onStar, onAddToCollection }) {
                     <ExternalLink size={18} />
                 </a>
 
-                {/* STAR BUTTON: Uses paper.isStarred */}
                 <button
                     onClick={() => onStar(paper._id)}
                     className={`p-2 rounded-lg transition-colors ${paper.isStarred
@@ -305,7 +285,6 @@ function PaperCard({ paper, onDelete, onStar, onAddToCollection }) {
                     <Star size={18} fill={paper.isStarred ? "currentColor" : "none"} />
                 </button>
 
-                {/* ADD TO COLLECTION BUTTON */}
                 <button
                     onClick={onAddToCollection}
                     className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"

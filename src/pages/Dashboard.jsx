@@ -21,7 +21,6 @@ export default function Dashboard() {
 
     const [dashboardData, setDashboardData] = useState(null);
 
-    // NEW: Last report timestamp
     const [lastReport, setLastReport] = useState(
         localStorage.getItem("lastReportGenerated")
     );
@@ -51,7 +50,6 @@ export default function Dashboard() {
         setIsSyncOpen(false);
     };
 
-    // Safe metric reader
     const getExternalStat = (key, type = "all") => {
         const table = dashboardData?.userStats?.table;
         if (!table) return 0;
@@ -63,17 +61,14 @@ export default function Dashboard() {
 
     const hasScholarData = dashboardData?.userBio && Object.keys(dashboardData.userBio).length > 0;
 
-    // NEW: Check if user has papers
     const noPapers = (dashboardData?.papersCount || 0) === 0;
 
-    // Handle disabled click
     const handleDisabledReportClick = () => {
         if (noPapers) {
             toast.error("You must have at least 1 paper to generate a report.");
         }
     };
 
-    // When user successfully downloads a report
     const handleReportGenerated = () => {
         const timestamp = Date.now();
         localStorage.setItem("lastReportGenerated", timestamp);
@@ -83,13 +78,11 @@ export default function Dashboard() {
     return (
         <div className="space-y-8 animate-fade-in pb-10">
 
-            {/* HEADER */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-800">Research Analytics</h1>
                     <p className="text-gray-500 text-sm">Welcome back, {user?.fullName?.split(" ")[0]}</p>
 
-                    {/* LAST REPORT TIME */}
                     {lastReport && (
                         <p className="text-xs text-gray-400 mt-1">
                             Last report generated: {new Date(Number(lastReport)).toLocaleString()}
@@ -99,7 +92,6 @@ export default function Dashboard() {
 
                 <div className="flex gap-3">
 
-                    {/* REPORT BUTTON WITH TOOLTIP */}
                     <div className="relative group">
                         <button
                             onClick={() => {
@@ -117,7 +109,6 @@ export default function Dashboard() {
                             Generate Report
                         </button>
 
-                        {/* Tooltip when disabled */}
                         {noPapers && (
                             <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-1.5 text-xs bg-gray-800 text-white rounded-lg opacity-0 group-hover:opacity-100 transition">
                                 Add at least one paper to generate a report
@@ -125,7 +116,6 @@ export default function Dashboard() {
                         )}
                     </div>
 
-                    {/* SYNC BUTTON */}
                     <button
                         onClick={() => setIsSyncOpen(true)}
                         className="flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-xl hover:bg-blue-700 transition shadow-lg shadow-blue-500/20"
@@ -136,7 +126,6 @@ export default function Dashboard() {
                 </div>
             </div>
 
-            {/* EMPTY STATE */}
             {!hasScholarData && (
                 <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-100 p-12 text-center">
                     <div className="max-w-md mx-auto">
@@ -155,10 +144,8 @@ export default function Dashboard() {
                 </div>
             )}
 
-            {/* FULL DASHBOARD CONTENT */}
             {hasScholarData && (
                 <>
-                    {/* PROFILE CARD */}
                     <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col md:flex-row gap-6 items-start">
                         <img
                             src={dashboardData.userBio.thumbnail}
@@ -188,7 +175,6 @@ export default function Dashboard() {
                         </div>
                     </div>
 
-                    {/* METRICS GRID */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         <MetricCard
                             label="Total Citations"
@@ -220,7 +206,6 @@ export default function Dashboard() {
                         />
                     </div>
 
-                    {/* CITATION GRAPH */}
                     {dashboardData.userStats?.graph && (
                         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-96">
                             <h3 className="text-lg font-bold text-gray-800 mb-6">Citation Growth (Yearly)</h3>
@@ -244,7 +229,6 @@ export default function Dashboard() {
                 </>
             )}
 
-            {/* MODALS */}
             <ScholarSyncModal
                 isOpen={isSyncOpen}
                 onClose={() => setIsSyncOpen(false)}
@@ -254,14 +238,13 @@ export default function Dashboard() {
             <ReportModal
                 isOpen={isReportOpen}
                 onClose={() => setIsReportOpen(false)}
-                onGenerated={handleReportGenerated}  // NEW CALLBACK
+                onGenerated={handleReportGenerated}
             />
 
         </div>
     );
 }
 
-// Metric Card
 function MetricCard({ label, value, subValue, icon, color }) {
     const colors = {
         blue: "bg-blue-50 text-blue-700",

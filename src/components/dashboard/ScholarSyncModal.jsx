@@ -5,7 +5,7 @@ import { X, Link as LinkIcon, DownloadCloud, CheckCircle, Loader2 } from "lucide
 
 export default function ScholarSyncModal({ isOpen, onClose, onSuccess }) {
     const [url, setUrl] = useState("");
-    const [status, setStatus] = useState("idle"); // idle | extracting | syncing | success
+    const [status, setStatus] = useState("idle");
     const [logs, setLogs] = useState([]);
 
     if (!isOpen) return null;
@@ -20,7 +20,6 @@ export default function ScholarSyncModal({ isOpen, onClose, onSuccess }) {
             setLogs([]);
             addLog("🔍 Analyzing Profile URL...");
 
-            // 1. Get Author ID
             const idResponse = await scholarAPI.getAuthorId(url);
             const authorId = idResponse.data.data.authorId;
 
@@ -30,7 +29,6 @@ export default function ScholarSyncModal({ isOpen, onClose, onSuccess }) {
             addLog("☁️ Contacting Google Scholar (This takes time)...");
             setStatus("syncing");
 
-            // 2. Trigger Backend Import (Saves to DB now!)
             const syncResponse = await scholarAPI.syncPapers(authorId);
 
             addLog("📚 Papers saved & Profile updated.");
@@ -39,7 +37,6 @@ export default function ScholarSyncModal({ isOpen, onClose, onSuccess }) {
             toast.success("Sync Complete!");
 
             setTimeout(() => {
-                // Pass the new data back to Dashboard to update UI instantly
                 if (onSuccess) {
                     onSuccess(syncResponse.data.data);
                 }

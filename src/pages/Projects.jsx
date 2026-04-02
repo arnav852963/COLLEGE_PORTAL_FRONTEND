@@ -8,12 +8,11 @@ import {
 import toast from "react-hot-toast";
 
 export default function Projects() {
-    const [view, setView] = useState("list"); // 'list' or 'detail'
+    const [view, setView] = useState("list");
     const [projects, setProjects] = useState([]);
     const [selectedProject, setSelectedProject] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Modals
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingProject, setEditingProject] = useState(null);
 
@@ -32,8 +31,6 @@ export default function Projects() {
             setLoading(false);
         }
     };
-
-    // --- ACTIONS ---
 
     const handleOpenProject = async (id) => {
         setLoading(true);
@@ -75,8 +72,6 @@ export default function Projects() {
         setIsModalOpen(true);
     };
 
-    // --- RENDER ---
-
     if (loading && view === "list" && projects.length === 0) {
         return <div className="p-20 text-center text-gray-400">Loading projects...</div>;
     }
@@ -84,7 +79,6 @@ export default function Projects() {
     return (
         <div className="space-y-8 animate-fade-in pb-10 max-w-7xl mx-auto">
 
-            {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-gray-100 pb-6">
                 <div>
                     {view === "detail" ? (
@@ -112,7 +106,6 @@ export default function Projects() {
                 )}
             </div>
 
-            {/* VIEW: LIST */}
             {view === "list" && (
                 <>
                     {projects.length === 0 ? (
@@ -176,7 +169,6 @@ export default function Projects() {
                 </>
             )}
 
-            {/* VIEW: DETAIL */}
             {view === "detail" && selectedProject && (
                 <ProjectDetailView
                     project={selectedProject}
@@ -184,7 +176,6 @@ export default function Projects() {
                 />
             )}
 
-            {/* MODAL */}
             {isModalOpen && (
                 <ProjectFormModal
                     projectToEdit={editingProject}
@@ -204,11 +195,9 @@ export default function Projects() {
     );
 }
 
-// --- SUB-COMPONENT: Detail View (The Dashboard) ---
 function ProjectDetailView({ project, setProject }) {
-    const [activeTab, setActiveTab] = useState("overview"); // overview | team | files | notes
+    const [activeTab, setActiveTab] = useState("overview");
 
-    // Refresh data helper
     const refreshProject = async () => {
         try {
             const res = await projectAPI.getById(project._id);
@@ -219,7 +208,6 @@ function ProjectDetailView({ project, setProject }) {
     return (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden min-h-[600px] flex flex-col md:flex-row">
 
-            {/* Sidebar Tabs */}
             <div className="w-full md:w-64 bg-gray-50 border-r border-gray-100 p-4 flex flex-col gap-2">
                 <TabButton active={activeTab === 'overview'} onClick={() => setActiveTab('overview')} icon={<Briefcase size={18}/>} label="Overview" />
                 <TabButton active={activeTab === 'team'} onClick={() => setActiveTab('team')} icon={<Users size={18}/>} label="Team Members" />
@@ -227,7 +215,6 @@ function ProjectDetailView({ project, setProject }) {
                 <TabButton active={activeTab === 'notes'} onClick={() => setActiveTab('notes')} icon={<FileText size={18}/>} label="Project Notes" />
             </div>
 
-            {/* Content Area */}
             <div className="flex-1 p-8">
                 {activeTab === 'overview' && (
                     <div className="space-y-6 animate-fade-in">
@@ -275,7 +262,6 @@ function ProjectDetailView({ project, setProject }) {
     );
 }
 
-// --- SUB-COMPONENT: Team ---
 function TeamSection({ project, onUpdate }) {
     const [email, setEmail] = useState("");
     const [loading, setLoading] = useState(false);
@@ -329,7 +315,6 @@ function TeamSection({ project, onUpdate }) {
     );
 }
 
-// --- SUB-COMPONENT: Files ---
 function FilesSection({ projectId }) {
     const [files, setFiles] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -363,7 +348,7 @@ function FilesSection({ projectId }) {
             toast.success("File uploaded");
             setFileName("");
             setFileToUpload(null);
-            fetchAttachments(); // Refresh list
+            fetchAttachments();
         } catch (err) {
             toast.error("Upload failed");
         } finally {
@@ -379,7 +364,6 @@ function FilesSection({ projectId }) {
                 <h3 className="text-xl font-bold text-gray-900">Attachments</h3>
             </div>
 
-            {/* Upload Form */}
             <form onSubmit={handleUpload} className="p-4 bg-gray-50 rounded-xl border border-gray-200 space-y-3">
                 <input
                     type="text"
@@ -403,7 +387,6 @@ function FilesSection({ projectId }) {
                 </div>
             </form>
 
-            {/* Files List */}
             {loading ? (
                 <p className="text-center text-gray-400 py-4">Loading files...</p>
             ) : (
@@ -417,7 +400,6 @@ function FilesSection({ projectId }) {
                                     <div className="bg-orange-100 text-orange-600 p-2 rounded-lg"><Paperclip size={18}/></div>
                                     <div className="flex flex-col">
                                         <span className="text-sm font-medium text-gray-800">{file.name}</span>
-                                        {/* Displays date as requested */}
                                         <span className="text-xs text-gray-500">
                        Uploaded: {new Date(file.createdAt).toLocaleDateString()}
                      </span>
@@ -435,7 +417,6 @@ function FilesSection({ projectId }) {
     );
 }
 
-// --- SUB-COMPONENT: Notes ---
 function NotesSection({ projectId }) {
     const [notes, setNotes] = useState([]);
     const [noteText, setNoteText] = useState("");
@@ -499,7 +480,6 @@ function NotesSection({ projectId }) {
                         notes.map((n) => (
                             <div key={n._id} className="bg-yellow-50 p-4 rounded-xl border border-yellow-100 text-gray-700 text-sm">
                                 <p className="leading-relaxed">{n.content}</p>
-                                {/* Displays Created At and Updated At as requested */}
                                 <div className="mt-2 pt-2 border-t border-yellow-100 flex flex-col gap-0.5 text-xs text-yellow-600">
                                     <span className="flex items-center gap-2"><Clock size={12} /> Created: {new Date(n.createdAt).toLocaleString()}</span>
                                     {n.updatedAt !== n.createdAt && (
@@ -514,7 +494,6 @@ function NotesSection({ projectId }) {
     );
 }
 
-// --- UI HELPERS ---
 function StatusBadge({ status }) {
     const styles = {
         "Completed": "bg-green-100 text-green-700",

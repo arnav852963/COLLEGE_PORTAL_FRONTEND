@@ -17,14 +17,12 @@ export default function AdminUserView() {
     const fetchDetails = async () => {
         try {
             const response = await adminAPI.getUserDetails(userId);
-            // The controller returns separated paper arrays (journalPapers, conferencePapers, etc.)
-            // We merge them here to display a unified "Recent Publications" list
             const resData = response.data.data;
             const allPapers = [
                 ...(resData.journalPapers || []),
                 ...(resData.conferencePapers || []),
                 ...(resData.bookChapterPapers || [])
-            ].sort((a, b) => new Date(b.publishedDate) - new Date(a.publishedDate)); // Sort by date descending
+            ].sort((a, b) => new Date(b.publishedDate) - new Date(a.publishedDate));
 
             setData({ ...resData, papers: allPapers });
         } catch (err) {
@@ -41,7 +39,6 @@ export default function AdminUserView() {
     return (
         <div className="space-y-8 animate-fade-in pb-10 max-w-5xl mx-auto">
 
-            {/* Header */}
             <div className="flex items-center gap-4 border-b border-gray-100 pb-6">
                 <button onClick={() => navigate(-1)} className="p-2 hover:bg-gray-100 rounded-full transition text-gray-500">
                     <ArrowLeft size={20} />
@@ -52,7 +49,6 @@ export default function AdminUserView() {
                 </div>
             </div>
 
-            {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <DetailCard
                     label="Total Papers"
@@ -72,7 +68,6 @@ export default function AdminUserView() {
                 />
             </div>
 
-            {/* Recent Papers */}
             <div className="space-y-6">
                 <h3 className="text-xl font-bold text-gray-900">Recent Publications</h3>
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden divide-y divide-gray-100">
@@ -102,7 +97,6 @@ export default function AdminUserView() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Projects List */}
                 <div>
                     <h3 className="text-lg font-bold text-gray-900 mb-4">Projects</h3>
                     <div className="space-y-3">
@@ -117,7 +111,6 @@ export default function AdminUserView() {
                     </div>
                 </div>
 
-                {/* Patents List */}
                 <div>
                     <h3 className="text-lg font-bold text-gray-900 mb-4">Patents</h3>
                     <div className="space-y-3">

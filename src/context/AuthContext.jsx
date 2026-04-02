@@ -8,7 +8,6 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Check if user data exists in localStorage on app load
         const storedUser = localStorage.getItem("user");
         if (storedUser) {
             setUser(JSON.parse(storedUser));
@@ -23,16 +22,13 @@ export const AuthProvider = ({ children }) => {
 
     const logout = async () => {
         try {
-            // Call backend to clear httpOnly cookies
-            // Matches user.routes.js: router.route("/logout").post(...)
             await api.post("/users/logout");
         } catch (e) {
             console.error("Logout failed", e);
         }
-        // Clear local state
         setUser(null);
         localStorage.removeItem("user");
-        window.location.href = "/login"; // Force redirect
+        window.location.href = "/login";
     };
 
     return (

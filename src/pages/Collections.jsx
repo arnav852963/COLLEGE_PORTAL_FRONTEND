@@ -7,16 +7,13 @@ import {
 import toast from "react-hot-toast";
 
 export default function Collections() {
-    // --- STATE ---
-    const [view, setView] = useState("grid"); // 'grid' (folders) or 'detail' (papers)
+    const [view, setView] = useState("grid");
     const [groups, setGroups] = useState([]);
-    const [selectedGroup, setSelectedGroup] = useState(null); // Stores full group object with papers
+    const [selectedGroup, setSelectedGroup] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Modal State: 'manual' or 'tag'
     const [modalType, setModalType] = useState(null);
 
-    // --- INITIAL LOAD ---
     useEffect(() => {
         fetchGroups();
     }, []);
@@ -25,7 +22,6 @@ export default function Collections() {
         setLoading(true);
         try {
             const response = await groupAPI.getAllGroups();
-            // Backend: getAllGroups returns { groups: [...] } inside data
             setGroups(response.data.data.groups || []);
         } catch (err) {
             console.error(err);
@@ -34,14 +30,11 @@ export default function Collections() {
         }
     };
 
-    // --- ACTIONS ---
-
-    // 1. Open a Folder
     const openGroup = async (groupId) => {
         setLoading(true);
         try {
             const response = await groupAPI.getGroupById(groupId);
-            setSelectedGroup(response.data.data); // This object contains the 'papers' array
+            setSelectedGroup(response.data.data);
             setView("detail");
         } catch (err) {
             toast.error("Failed to open collection");
@@ -50,7 +43,6 @@ export default function Collections() {
         }
     };
 
-    // 2. Delete Entire Folder
     const handleDeleteGroup = async (id, e) => {
         e.stopPropagation();
         if(!window.confirm("Delete this collection? Papers will not be deleted.")) return;
@@ -64,11 +56,9 @@ export default function Collections() {
         }
     };
 
-    // 3. Remove Paper from Collection
     const handleRemovePaper = async (paperId) => {
         if(!window.confirm("Remove paper from this list?")) return;
 
-        // Optimistic Update
         const originalPapers = selectedGroup.papers;
         setSelectedGroup(prev => ({
             ...prev,
@@ -79,13 +69,10 @@ export default function Collections() {
             await groupAPI.removePaperFromGroup(selectedGroup._id, paperId);
             toast.success("Paper removed");
         } catch (err) {
-            // Rollback
             setSelectedGroup(prev => ({ ...prev, papers: originalPapers }));
             toast.error("Failed to remove paper");
         }
     };
-
-    // --- RENDER HELPERS ---
 
     if (loading && view === "grid" && groups.length === 0) {
         return <div className="p-20 text-center text-gray-400">Loading collections...</div>;
@@ -94,12 +81,11 @@ export default function Collections() {
     return (
         <div className="space-y-8 animate-fade-in pb-10 max-w-7xl mx-auto">
 
-            {/* --- HEADER --- */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-gray-100 pb-6">
                 <div>
                     {view === "detail" ? (
                         <button
-                            onClick={() => { setView("grid"); fetchGroups(); }} // Refresh groups when going back
+                            onClick={() => { setView("grid"); fetchGroups(); }}
                             className="flex items-center text-gray-500 hover:text-blue-600 transition mb-1"
                         >
                             <ArrowLeft size={18} className="mr-1" /> Back to Collections
@@ -115,7 +101,6 @@ export default function Collections() {
                     )}
                 </div>
 
-                {/* Buttons only visible in Grid view */}
                 {view === "grid" && (
                     <div className="flex gap-3">
                         <button
@@ -134,7 +119,6 @@ export default function Collections() {
                 )}
             </div>
 
-            {/* --- VIEW: GRID (FOLDERS) --- */}
             {view === "grid" && (
                 <>
                     {groups.length === 0 ? (
@@ -189,7 +173,6 @@ export default function Collections() {
                 </>
             )}
 
-            {/* --- VIEW: DETAIL (PAPERS) --- */}
             {view === "detail" && (
                 <div className="space-y-4">
                     {loading ? (
@@ -236,7 +219,6 @@ export default function Collections() {
                 </div>
             )}
 
-            {/* Create Modal */}
             {modalType && (
                 <CreateGroupModal
                     type={modalType}
@@ -252,7 +234,6 @@ export default function Collections() {
     );
 }
 
-// --- MODAL COMPONENT ---
 function CreateGroupModal({ type, onClose, onSuccess }) {
     const [formData, setFormData] = useState({ name: "", description: "", tag: "" });
     const [loading, setLoading] = useState(false);
@@ -271,7 +252,6 @@ function CreateGroupModal({ type, onClose, onSuccess }) {
             }
 
             toast.success("Collection Created!");
-            // Important: The backend returns the new group object in response.data.data
             onSuccess(response.data.data);
         } catch (err) {
             console.error(err);

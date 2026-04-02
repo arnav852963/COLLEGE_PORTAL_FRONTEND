@@ -7,15 +7,14 @@ import {
 import toast from "react-hot-toast";
 
 export default function Settings() {
-    const { user, login, logout } = useAuth(); // login is used to update local user state
-    const [activeTab, setActiveTab] = useState("profile"); // profile | security
+    const { user, login, logout } = useAuth();
+    const [activeTab, setActiveTab] = useState("profile");
     const [loading, setLoading] = useState(false);
 
     return (
         <div className="max-w-4xl mx-auto space-y-8 animate-fade-in pb-10">
             <h1 className="text-3xl font-bold text-gray-900">Account Settings</h1>
 
-            {/* Tabs */}
             <div className="flex space-x-1 bg-gray-100 p-1 rounded-xl w-fit">
                 <button
                     onClick={() => setActiveTab("profile")}
@@ -35,7 +34,6 @@ export default function Settings() {
                 </button>
             </div>
 
-            {/* Content */}
             <div className="grid gap-8">
                 {activeTab === "profile" ? (
                     <ProfileSettings user={user} onUpdate={login} />
@@ -47,7 +45,6 @@ export default function Settings() {
     );
 }
 
-// --- PROFILE TAB ---
 function ProfileSettings({ user, onUpdate }) {
     const [formData, setFormData] = useState({
         new_username: user?.username || "",
@@ -61,7 +58,7 @@ function ProfileSettings({ user, onUpdate }) {
         try {
             const res = await userAPI.updateProfile(formData);
             toast.success("Profile updated!");
-            onUpdate(res.data.data); // Update context with new user object
+            onUpdate(res.data.data);
         } catch (err) {
             toast.error(err.response?.data?.message || "Failed to update");
         } finally {
@@ -89,7 +86,6 @@ function ProfileSettings({ user, onUpdate }) {
     return (
         <div className="space-y-6">
 
-            {/* Avatar Section */}
             <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-6">
                 <div className="relative group">
                     <img
@@ -108,7 +104,6 @@ function ProfileSettings({ user, onUpdate }) {
                 </div>
             </div>
 
-            {/* Details Form */}
             <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
                 <h3 className="text-lg font-bold text-gray-900 mb-4">Personal Information</h3>
                 <form onSubmit={handleUpdateDetails} className="space-y-4">
@@ -145,13 +140,10 @@ function ProfileSettings({ user, onUpdate }) {
                 </form>
             </div>
 
-            {/* Report Generator Hook */}
-            {/* You can add a button here to trigger report generation if needed */}
         </div>
     );
 }
 
-// --- SECURITY TAB ---
 function SecuritySettings({ logout }) {
     const [passData, setPassData] = useState({
         original_password: "",
@@ -183,7 +175,7 @@ function SecuritySettings({ logout }) {
         try {
             await userAPI.deleteAccount();
             toast.success("Account deleted.");
-            logout(); // Redirects to login
+            logout();
         } catch (err) {
             toast.error("Failed to delete account");
         }
@@ -192,7 +184,6 @@ function SecuritySettings({ logout }) {
     return (
         <div className="space-y-6">
 
-            {/* Change Password */}
             <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
                 <h3 className="text-lg font-bold text-gray-900 mb-4">Change Password</h3>
                 <form onSubmit={handleChangePass} className="space-y-4 max-w-md">
@@ -233,7 +224,6 @@ function SecuritySettings({ logout }) {
                 </form>
             </div>
 
-            {/* Danger Zone */}
             <div className="bg-red-50 p-6 rounded-2xl border border-red-100">
                 <h3 className="text-lg font-bold text-red-800 mb-2">Danger Zone</h3>
                 <p className="text-red-600 text-sm mb-4">

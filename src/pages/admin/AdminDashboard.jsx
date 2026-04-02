@@ -16,12 +16,10 @@ export default function AdminDashboard() {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // Custom Date Range State
     const [dateRange, setDateRange] = useState({ from: "", to: "" });
     const [rangeStats, setRangeStats] = useState(null);
     const [analyzing, setAnalyzing] = useState(false);
 
-    // Graph Data State (Dynamic: Default or Filtered)
     const [graphData, setGraphData] = useState([]);
 
     useEffect(() => {
@@ -36,7 +34,6 @@ export default function AdminDashboard() {
             ]);
 
             setStats(statsRes.data.data);
-            // Initialize graph with default data from stats
             setGraphData(statsRes.data.data.yearwiseAnalytics || []);
 
             setUsers(usersRes.data.data || []);
@@ -48,15 +45,12 @@ export default function AdminDashboard() {
         }
     };
 
-    // Helper to transform raw paper list from 'from_To' into year-wise graph data
     const processGraphData = (papers, fromYear, toYear) => {
         const counts = {};
-        // Initialize all years in range with 0
         for (let i = parseInt(fromYear); i <= parseInt(toYear); i++) {
             counts[i] = 0;
         }
 
-        // Count papers per year
         papers.forEach(p => {
             if (p.publishedDate) {
                 const year = new Date(p.publishedDate).getFullYear();
@@ -66,7 +60,6 @@ export default function AdminDashboard() {
             }
         });
 
-        // Convert to array for Recharts
         return Object.keys(counts).map(year => ({
             year: year.toString(),
             count: counts[year]
@@ -84,7 +77,6 @@ export default function AdminDashboard() {
 
             setRangeStats(data);
 
-            // Update Graph with new filtered data
             if (data.listOfPapers) {
                 const newGraphData = processGraphData(data.listOfPapers, dateRange.from, dateRange.to);
                 setGraphData(newGraphData);
@@ -104,13 +96,11 @@ export default function AdminDashboard() {
     return (
         <div className="space-y-8 animate-fade-in pb-10 max-w-7xl mx-auto">
 
-            {/* Header */}
             <div>
                 <h1 className="text-3xl font-bold text-gray-900">Admin Overview</h1>
                 <p className="text-gray-500 mt-1">System-wide analytics and faculty directory.</p>
             </div>
 
-            {/* 1. Overview Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <StatCard label="Total Faculty" value={stats.totalUsers} icon={<Users className="text-blue-600"/>} color="blue" />
                 <StatCard label="Total Publications" value={stats.total} icon={<FileText className="text-purple-600"/>} color="purple" />
@@ -120,7 +110,6 @@ export default function AdminDashboard() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-                {/* 2. Growth Chart (Dynamic) */}
                 <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                     <div className="flex justify-between items-center mb-6">
                         <h3 className="text-lg font-bold text-gray-800">
@@ -145,12 +134,11 @@ export default function AdminDashboard() {
                         </ResponsiveContainer>
                     </div>
 
-                    {/* Reset Button */}
                     {rangeStats && (
                         <button
                             onClick={() => {
                                 setRangeStats(null);
-                                setGraphData(stats.yearwiseAnalytics); // Reset graph to default
+                                setGraphData(stats.yearwiseAnalytics);
                                 setDateRange({from: "", to: ""});
                             }}
                             className="text-xs text-blue-600 hover:underline mt-4 block text-center w-full"
@@ -160,7 +148,6 @@ export default function AdminDashboard() {
                     )}
                 </div>
 
-                {/* 3. Range Analyzer Tool */}
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-fit">
                     <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
                         <Filter size={18} /> Impact Analysis
@@ -207,7 +194,6 @@ export default function AdminDashboard() {
                 </div>
             </div>
 
-            {/* 4. Faculty Directory Table */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                 <div className="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                     <h3 className="text-lg font-bold text-gray-800">Faculty Directory</h3>
