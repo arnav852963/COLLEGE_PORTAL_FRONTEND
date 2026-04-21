@@ -1,1 +1,32 @@
 @import "tailwindcss";
+
+:root {
+  --app-bg: #f5f6f8;
+  --surface: #eef1f5;
+  --surface-2: #e7ebf2;
+  --border: rgba(15, 23, 42, 0.10);
+  --fg: #0f172a;
+  --muted: rgba(15, 23, 42, 0.65);
+  --accent: #2563eb;
+  --accent-soft: rgba(37, 99, 235, 0.12);
+  --ring: rgba(37, 99, 235, 0.25);
+  --danger: #dc2626;
+}
+
+@theme {
+  --color-app: var(--app-bg);
+  --color-surface: var(--surface);
+  --color-surface2: var(--surface-2);
+  --color-border: var(--border);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-ring: var(--ring);
+  --color-danger: var(--danger);
+}
+
+body {
+  background: var(--app-bg);
+  color: var(--fg);
+}

@@ -21,12 +21,12 @@ export default function Sidebar() {
     ];
 
     return (
-        <aside className="w-64 bg-white border-r border-gray-200 h-screen flex flex-col justify-between shadow-sm z-20 transition-colors duration-200">
+        <aside className="w-64 bg-surface border-r border-border h-screen flex flex-col justify-between shadow-sm z-20 transition-colors duration-200">
 
             <div>
-                <div className="h-16 flex items-center px-6 border-b border-gray-100">
+                <div className="h-16 flex items-center px-6 border-b border-border">
                     <NavLink to="/dashboard" className="block">
-                        <Logo size={34} showText className="select-none" />
+                        <Logo size={46} showText={false} className="select-none" />
                     </NavLink>
                 </div>
 
@@ -38,8 +38,8 @@ export default function Sidebar() {
                             className={({ isActive }) =>
                                 `flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                                     isActive
-                                        ? "bg-blue-50 text-blue-600"
-                                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                                        ? "bg-accent-soft text-accent"
+                                        : "text-muted hover:bg-surface2 hover:text-fg"
                                 }`
                             }
                         >
@@ -54,8 +54,8 @@ export default function Sidebar() {
                             className={({ isActive }) =>
                                 `flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                                     isActive
-                                        ? "bg-purple-50 text-purple-600"
-                                        : "text-gray-600 hover:bg-gray-50"
+                                        ? "bg-accent-soft text-accent"
+                                        : "text-muted hover:bg-surface2"
                                 }`
                             }
                         >
@@ -66,15 +66,15 @@ export default function Sidebar() {
                 </nav>
             </div>
 
-            <div className="p-4 border-t border-gray-100 space-y-1">
+            <div className="p-4 border-t border-border space-y-1">
 
                 <NavLink
                     to="/settings"
                     className={({ isActive }) =>
                         `flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                             isActive
-                                ? "bg-gray-100 text-gray-900"
-                                : "text-gray-600 hover:bg-gray-50"
+                                ? "bg-surface2 text-fg"
+                                : "text-muted hover:bg-surface2"
                         }`
                     }
                 >
@@ -82,21 +82,21 @@ export default function Sidebar() {
                     Settings
                 </NavLink>
 
-                <div className="my-2 border-t border-gray-100"></div>
+                <div className="my-2 border-t border-border"></div>
 
                 <div className="flex items-center gap-3 px-2 py-2">
                     <img
                         src={user?.avatar || "https://via.placeholder.com/40"}
                         alt="User"
-                        className="w-8 h-8 rounded-full object-cover border border-gray-200"
+                        className="w-8 h-8 rounded-full object-cover border border-border"
                     />
                     <div className="overflow-hidden flex-1">
-                        <p className="text-sm font-semibold text-gray-800 truncate">{user?.fullName}</p>
-                        <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+                        <p className="text-sm font-semibold text-fg truncate">{user?.fullName}</p>
+                        <p className="text-xs text-muted truncate">{user?.email}</p>
                     </div>
                     <button
                         onClick={logout}
-                        className="text-gray-400 hover:text-red-600 transition p-1"
+                        className="text-muted hover:text-danger transition p-1"
                         title="Sign Out"
                     >
                         <LogOut size={18} />

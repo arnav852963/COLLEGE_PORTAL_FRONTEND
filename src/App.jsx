@@ -20,7 +20,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminUserView from './pages/admin/AdminUserView';
 
 const AppLayout = ({ children }) => (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
+    <div className="flex h-screen bg-app overflow-hidden text-fg">
         <Sidebar />
         <main className="flex-1 overflow-y-auto p-8 transition-all">
             {children}

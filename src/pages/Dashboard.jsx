@@ -57,7 +57,7 @@ export default function Dashboard() {
         return item ? item[key][type] : 0;
     };
 
-    if (loading) return <div className="p-10 text-center text-gray-500">Loading Dashboard...</div>;
+    if (loading) return <div className="p-10 text-center text-muted">Loading Dashboard...</div>;
 
     const hasScholarData = dashboardData?.userBio && Object.keys(dashboardData.userBio).length > 0;
 
@@ -81,7 +81,7 @@ export default function Dashboard() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-800">Research Analytics</h1>
-                    <p className="text-gray-500 text-sm">Welcome back, {user?.fullName?.split(" ")[0]}</p>
+                    <p className="text-muted text-sm">Welcome back, {user?.fullName?.split(" ")[0]}</p>
 
                     {lastReport && (
                         <p className="text-xs text-gray-400 mt-1">
@@ -127,13 +127,13 @@ export default function Dashboard() {
             </div>
 
             {!hasScholarData && (
-                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-100 p-12 text-center">
+                            <div className="bg-surface rounded-2xl border border-border p-12 text-center">
                     <div className="max-w-md mx-auto">
-                        <div className="bg-white p-4 rounded-full shadow-sm w-fit mx-auto mb-6">
+                                <div className="bg-app p-4 rounded-full shadow-sm w-fit mx-auto mb-6">
                             <LayoutDashboard size={32} className="text-blue-600" />
                         </div>
-                        <h2 className="text-xl font-bold text-gray-800 mb-3">Your dashboard is empty</h2>
-                        <p className="text-gray-600 mb-8 leading-relaxed">
+                                <h2 className="text-xl font-bold text-fg mb-3">Your dashboard is empty</h2>
+                                <p className="text-muted mb-8 leading-relaxed">
                             Sync your Google Scholar profile to automatically import papers, generate citation graphs, and calculate your h-index.
                         </p>
 
@@ -146,17 +146,17 @@ export default function Dashboard() {
 
             {hasScholarData && (
                 <>
-                    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col md:flex-row gap-6 items-start">
+                    <div className="bg-surface rounded-2xl p-6 shadow-sm border border-border flex flex-col md:flex-row gap-6 items-start">
                         <img
                             src={dashboardData.userBio.thumbnail}
                             alt="Profile"
                             className="w-24 h-24 rounded-full border-4 border-blue-50 object-cover"
                         />
                         <div className="flex-1">
-                            <h2 className="text-2xl font-bold text-gray-900">{dashboardData.userBio.name}</h2>
-                            <p className="text-gray-600 font-medium mb-2">{dashboardData.userBio.affiliations}</p>
+                            <h2 className="text-2xl font-bold text-fg">{dashboardData.userBio.name}</h2>
+                            <p className="text-muted font-medium mb-2">{dashboardData.userBio.affiliations}</p>
 
-                            <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-4">
+                            <div className="flex flex-wrap gap-4 text-sm text-muted mb-4">
                                 <div className="flex items-center gap-1"><Mail size={14}/> {dashboardData.userBio.email}</div>
                                 {dashboardData.userBio.website && (
                                     <a href={dashboardData.userBio.website} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-blue-600 hover:underline">
@@ -167,7 +167,7 @@ export default function Dashboard() {
 
                             <div className="flex flex-wrap gap-2">
                                 {dashboardData.userBio.interests?.map((interest, i) => (
-                                    <span key={i} className="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full font-medium">
+                                    <span key={i} className="px-3 py-1 bg-surface2 text-fg text-xs rounded-full font-medium">
                                         {interest.title}
                                     </span>
                                 ))}
@@ -207,8 +207,8 @@ export default function Dashboard() {
                     </div>
 
                     {dashboardData.userStats?.graph && (
-                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-96">
-                            <h3 className="text-lg font-bold text-gray-800 mb-6">Citation Growth (Yearly)</h3>
+                        <div className="bg-surface p-6 rounded-2xl shadow-sm border border-border h-96">
+                            <h3 className="text-lg font-bold text-fg mb-6">Citation Growth (Yearly)</h3>
                             <ResponsiveContainer width="100%" height="85%">
                                 <AreaChart data={dashboardData.userStats.graph}>
                                     <defs>
@@ -254,11 +254,11 @@ function MetricCard({ label, value, subValue, icon, color }) {
     };
 
     return (
-        <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex items-start justify-between">
+        <div className="bg-surface p-5 rounded-xl shadow-sm border border-border flex items-start justify-between">
             <div>
-                <p className="text-sm font-medium text-gray-500 mb-1">{label}</p>
-                <h4 className="text-2xl font-bold text-gray-900">{value}</h4>
-                {subValue && <p className="text-xs text-gray-400 mt-1">{subValue}</p>}
+                <p className="text-sm font-medium text-muted mb-1">{label}</p>
+                <h4 className="text-2xl font-bold text-fg">{value}</h4>
+                {subValue && <p className="text-xs text-muted mt-1">{subValue}</p>}
             </div>
             <div className={`p-3 rounded-lg ${colors[color]}`}>
                 {icon}

@@ -63,30 +63,30 @@ export default function Login() {
     };
 
 
-    const inputClass = "w-full pl-10 pr-4 py-3 rounded-lg bg-gray-50 border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all text-gray-700 placeholder-gray-400";
-    const iconClass = "absolute left-3 top-3.5 text-gray-400 h-5 w-5";
+    const inputClass = "w-full pl-10 pr-4 py-3 rounded-lg bg-app border border-border focus:border-accent focus:ring-2 focus:ring-ring outline-none transition-all text-fg placeholder:text-muted";
+    const iconClass = "absolute left-3 top-3.5 text-muted h-5 w-5";
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-900 py-12 px-4 relative overflow-hidden">
+        <div className="min-h-screen flex items-center justify-center bg-app py-12 px-4 relative overflow-hidden">
             <Background blur={10} dim={0.55} />
 
-            <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl w-full max-w-md z-10 overflow-hidden relative">
+            <div className="bg-surface/90 backdrop-blur-sm rounded-2xl shadow-2xl w-full max-w-md z-10 overflow-hidden relative border border-border">
                 <div className="p-8">
 
 
                     <div className="text-center mb-8">
-                        <h2 className="text-3xl font-bold text-gray-800">Welcome Back</h2>
-                        <p className="text-sm text-gray-500 mt-2">Sign in to manage your research</p>
+                        <h2 className="text-3xl font-bold text-fg">Welcome Back</h2>
+                        <p className="text-sm text-muted mt-2">Sign in to manage your research</p>
                     </div>
 
 
-                    <div className="mb-6 pb-6 border-b border-gray-100 flex flex-col items-center">
+                    <div className="mb-6 pb-6 border-b border-border flex flex-col items-center">
                         <GoogleLogin
                             onSuccess={handleGoogleSuccess}
                             onError={() => toast.error("Google Login Failed")}
                             theme="filled_blue" shape="pill" text="signin_with" width="100%"
                         />
-                        <div className="w-full text-center mt-4 text-xs text-gray-400 font-medium">OR LOGIN WITH EMAIL</div>
+                        <div className="w-full text-center mt-4 text-xs text-muted font-medium">OR LOGIN WITH EMAIL</div>
                     </div>
 
 
@@ -116,21 +116,21 @@ export default function Login() {
                         </div>
 
                         <div className="text-right">
-                            <a href="#" className="text-xs text-blue-600 hover:underline">Forgot Password?</a>
+                            <a href="#" className="text-xs text-accent hover:underline">Forgot Password?</a>
                         </div>
 
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full flex justify-center items-center bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition shadow-lg shadow-blue-500/30 disabled:opacity-70"
+                            className="w-full flex justify-center items-center bg-accent text-white py-3 rounded-lg font-semibold hover:opacity-95 transition shadow-lg shadow-blue-500/20 disabled:opacity-70"
                         >
                             {loading ? "Signing in..." : "Login"} <ArrowRight size={18} className="ml-2" />
                         </button>
                     </form>
 
                     <div className="text-center mt-8">
-                        <p className="text-sm text-gray-500">
-                            Don't have an account? <Link to="/signup" className="text-blue-600 font-semibold hover:underline">Register here</Link>
+                        <p className="text-sm text-muted">
+                            Don't have an account? <Link to="/signup" className="text-accent font-semibold hover:underline">Register here</Link>
                         </p>
                     </div>
 

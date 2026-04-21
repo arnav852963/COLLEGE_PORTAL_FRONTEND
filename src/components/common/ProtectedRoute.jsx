@@ -8,8 +8,8 @@ export default function ProtectedRoute({ children }) {
 
     if (loading) {
         return (
-            <div className="h-screen w-full flex items-center justify-center bg-gray-50">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <div className="h-screen w-full flex items-center justify-center bg-app">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div>
             </div>
         );
     }

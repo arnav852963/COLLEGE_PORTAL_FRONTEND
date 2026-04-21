@@ -4,6 +4,7 @@ import { GoogleLogin } from "@react-oauth/google";
 import { authAPI } from "../api/auth";
 import toast from "react-hot-toast";
 import { Background } from "../components/Background";
+import { useAuth } from "../context/AuthContext";
 import {
     User, Mail, Lock, Briefcase, BookOpen,
     Image as ImageIcon, CheckCircle, ArrowRight, ArrowLeft
@@ -11,6 +12,7 @@ import {
 
 export default function Signup() {
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const [currentStep, setCurrentStep] = useState(1);
     const [loading, setLoading] = useState(false);
@@ -43,7 +45,8 @@ export default function Signup() {
             setLoading(true);
             const response = await authAPI.googleLogin(credentialResponse.credential);
 
-            localStorage.setItem("user", JSON.stringify(response.data.data));
+            const userData = response.data.data.user || response.data.data;
+            login(userData);
 
             toast.success("Welcome! Signed in with Google.");
             navigate("/dashboard");
@@ -102,33 +105,33 @@ export default function Signup() {
         }
     };
 
-    const inputClass = "w-full pl-10 pr-4 py-3 rounded-lg bg-gray-50 border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all text-gray-700 placeholder-gray-400";
-    const iconClass = "absolute left-3 top-3.5 text-gray-400 h-5 w-5";
+    const inputClass = "w-full pl-10 pr-4 py-3 rounded-lg bg-app border border-border focus:border-accent focus:ring-2 focus:ring-ring outline-none transition-all text-fg placeholder:text-muted";
+    const iconClass = "absolute left-3 top-3.5 text-muted h-5 w-5";
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-900 py-12 px-4 relative overflow-hidden">
+        <div className="min-h-screen flex items-center justify-center bg-app py-12 px-4 relative overflow-hidden">
             <Background blur={10} dim={0.55} />
 
-            <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl w-full max-w-lg z-10 overflow-hidden relative flex flex-col">
+            <div className="bg-surface/90 backdrop-blur-sm rounded-2xl shadow-2xl w-full max-w-lg z-10 overflow-hidden relative flex flex-col border border-border">
 
-                <div className="h-1.5 bg-gray-100 w-full">
+                <div className="h-1.5 bg-app w-full">
                     <div className="h-full bg-blue-600 transition-all duration-500" style={{ width: `${(currentStep / 4) * 100}%` }}></div>
                 </div>
 
                 <div className="p-8">
                     <div className="text-center mb-6">
-                        <h2 className="text-2xl font-bold text-gray-800">Faculty Registration</h2>
-                        <p className="text-sm text-gray-500">Research Management Portal • IIIT-NR</p>
+                        <h2 className="text-2xl font-bold text-fg">Faculty Registration</h2>
+                        <p className="text-sm text-muted">Research Management Portal • ProfConnect</p>
                     </div>
 
                     {currentStep === 1 && (
-                        <div className="mb-6 pb-6 border-b border-gray-100 flex flex-col items-center">
+                        <div className="mb-6 pb-6 border-b border-border flex flex-col items-center">
                             <GoogleLogin
                                 onSuccess={handleGoogleSuccess}
                                 onError={() => toast.error("Google Signup Failed")}
                                 theme="filled_blue" shape="pill" text="signup_with"
                             />
-                            <div className="w-full text-center mt-4 text-xs text-gray-400">OR REGISTER MANUALLY</div>
+                            <div className="w-full text-center mt-4 text-xs text-muted">OR REGISTER MANUALLY</div>
                         </div>
                     )}
 
@@ -177,27 +180,27 @@ export default function Signup() {
 
                         {currentStep === 4 && (
                             <div className="space-y-4 animate-fade-in">
-                                <div className="p-3 border-2 border-dashed border-gray-300 rounded-lg text-center">
-                                    <ImageIcon className="mx-auto h-6 w-6 text-gray-400" />
-                                    <p className="text-xs font-semibold text-gray-600 mb-1">Avatar</p>
-                                    <input type="file" onChange={(e) => setAvatar(e.target.files[0])} className="w-full text-xs text-gray-500"/>
+                                <div className="p-3 border-2 border-dashed border-border rounded-lg text-center bg-app">
+                                    <ImageIcon className="mx-auto h-6 w-6 text-muted" />
+                                    <p className="text-xs font-semibold text-fg mb-1">Avatar</p>
+                                    <input type="file" onChange={(e) => setAvatar(e.target.files[0])} className="w-full text-xs text-muted"/>
                                 </div>
-                                <div className="p-3 border-2 border-dashed border-gray-300 rounded-lg text-center">
-                                    <ImageIcon className="mx-auto h-6 w-6 text-gray-400" />
-                                    <p className="text-xs font-semibold text-gray-600 mb-1">Cover Image</p>
-                                    <input type="file" onChange={(e) => setCoverImage(e.target.files[0])} className="w-full text-xs text-gray-500"/>
+                                <div className="p-3 border-2 border-dashed border-border rounded-lg text-center bg-app">
+                                    <ImageIcon className="mx-auto h-6 w-6 text-muted" />
+                                    <p className="text-xs font-semibold text-fg mb-1">Cover Image</p>
+                                    <input type="file" onChange={(e) => setCoverImage(e.target.files[0])} className="w-full text-xs text-muted"/>
                                 </div>
-                                <label className="flex items-center space-x-2 p-2 bg-gray-50 rounded cursor-pointer">
+                                <label className="flex items-center space-x-2 p-2 bg-app rounded cursor-pointer border border-border">
                                     <input type="checkbox" name="isAdmin" checked={formData.isAdmin} onChange={handleChange} className="h-4 w-4 text-blue-600"/>
-                                    <span className="text-gray-700 text-sm">Request Admin Access</span>
+                                    <span className="text-fg text-sm">Request Admin Access</span>
                                 </label>
                             </div>
                         )}
                     </div>
 
-                    <div className="flex justify-between mt-8 pt-4 border-t border-gray-100">
+                    <div className="flex justify-between mt-8 pt-4 border-t border-border">
                         {currentStep > 1 ? (
-                            <button onClick={() => setCurrentStep(p => p - 1)} className="flex items-center text-gray-600 hover:text-gray-900">
+                            <button onClick={() => setCurrentStep(p => p - 1)} className="flex items-center text-muted hover:text-fg">
                                 <ArrowLeft size={18} className="mr-2" /> Back
                             </button>
                         ) : <span></span>}
@@ -214,7 +217,7 @@ export default function Signup() {
                     </div>
 
                     <div className="text-center mt-6">
-                        <p className="text-sm text-gray-500">Have an account? <Link to="/login" className="text-blue-600 font-semibold">Login</Link></p>
+                        <p className="text-sm text-muted">Have an account? <Link to="/login" className="text-accent font-semibold">Login</Link></p>
                     </div>
 
                 </div>

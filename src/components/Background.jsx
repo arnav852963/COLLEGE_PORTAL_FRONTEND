@@ -9,18 +9,18 @@ export const Background = ({
 }) => {
     return (
         <div
-            className={`absolute inset-0 -z-10 ${className}`.trim()}
+            className={`absolute inset-0 z-0 ${className}`.trim()}
             aria-hidden="true"
         >
             <div
-                className="absolute inset-0 bg-center bg-cover"
+                className="absolute inset-0 -z-10 bg-center bg-cover"
                 style={{
                     backgroundImage: `url(${image})`,
                     filter: `blur(${blur}px)`,
                     transform: "scale(1.05)",
                 }}
             />
-            <div className="absolute inset-0 bg-gray-900" style={{ opacity: dim }} />
+            <div className="absolute inset-0 -z-10 bg-gray-900" style={{ opacity: dim }} />
         </div>
     );
 };
