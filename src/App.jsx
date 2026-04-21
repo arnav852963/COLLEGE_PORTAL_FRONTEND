@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Toaster } from 'react-hot-toast';
 
 import { AuthProvider } from "./context/AuthContext";
+import { ThemeProvider } from "./context/ThemeContext";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 
 import Sidebar from "./components/layout/Sidebar";
@@ -30,41 +31,43 @@ const AppLayout = ({ children }) => (
 
 function App() {
     return (
-        <AuthProvider>
-            <Router>
-                <Toaster position="top-right" />
-                <Routes>
-                    <Route path="/signup" element={<Signup />} />
-                    <Route path="/login" element={<Login />} />
+        <ThemeProvider>
+            <AuthProvider>
+                <Router>
+                    <Toaster position="top-right" />
+                    <Routes>
+                        <Route path="/signup" element={<Signup />} />
+                        <Route path="/login" element={<Login />} />
 
-                    <Route path="/dashboard" element={<ProtectedRoute><AppLayout><Dashboard /></AppLayout></ProtectedRoute>} />
-                    <Route path="/library" element={<ProtectedRoute><AppLayout><Library /></AppLayout></ProtectedRoute>} />
-                    <Route path="/collections" element={<ProtectedRoute><AppLayout><Collections /></AppLayout></ProtectedRoute>} />
-                    <Route path="/patents" element={<ProtectedRoute><AppLayout><Patents /></AppLayout></ProtectedRoute>} />
-                    <Route path="/projects" element={<ProtectedRoute><AppLayout><Projects /></AppLayout></ProtectedRoute>} />
-                    <Route path="/settings" element={<ProtectedRoute><AppLayout><Settings /></AppLayout></ProtectedRoute>} />
+                        <Route path="/dashboard" element={<ProtectedRoute><AppLayout><Dashboard /></AppLayout></ProtectedRoute>} />
+                        <Route path="/library" element={<ProtectedRoute><AppLayout><Library /></AppLayout></ProtectedRoute>} />
+                        <Route path="/collections" element={<ProtectedRoute><AppLayout><Collections /></AppLayout></ProtectedRoute>} />
+                        <Route path="/patents" element={<ProtectedRoute><AppLayout><Patents /></AppLayout></ProtectedRoute>} />
+                        <Route path="/projects" element={<ProtectedRoute><AppLayout><Projects /></AppLayout></ProtectedRoute>} />
+                        <Route path="/settings" element={<ProtectedRoute><AppLayout><Settings /></AppLayout></ProtectedRoute>} />
 
-                    <Route path="/admin" element={
-                        <ProtectedRoute>
-                            <AppLayout>
-                                <AdminDashboard />
-                            </AppLayout>
-                        </ProtectedRoute>
-                    } />
+                        <Route path="/admin" element={
+                            <ProtectedRoute>
+                                <AppLayout>
+                                    <AdminDashboard />
+                                </AppLayout>
+                            </ProtectedRoute>
+                        } />
 
-                    <Route path="/admin/user/:userId" element={
-                        <ProtectedRoute>
-                            <AppLayout>
-                                <AdminUserView />
-                            </AppLayout>
-                        </ProtectedRoute>
-                    } />
+                        <Route path="/admin/user/:userId" element={
+                            <ProtectedRoute>
+                                <AppLayout>
+                                    <AdminUserView />
+                                </AppLayout>
+                            </ProtectedRoute>
+                        } />
 
-                    <Route path="/" element={<Navigate to="/dashboard" replace />} />
-                    <Route path="*" element={<Navigate to="/login" replace />} />
-                </Routes>
-            </Router>
-        </AuthProvider>
+                        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                        <Route path="*" element={<Navigate to="/login" replace />} />
+                    </Routes>
+                </Router>
+            </AuthProvider>
+        </ThemeProvider>
     );
 }
 

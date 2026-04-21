@@ -2,14 +2,16 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import logo from "../../assets/logo.png";
+import { useTheme } from "../../context/ThemeContext";
 
 import {
     LayoutDashboard, BookOpen, Folders, Briefcase, FileBadge,
-    LogOut, Settings, Shield
+    LogOut, Settings, Shield, Moon, Sun
 } from "lucide-react";
 
 export default function Sidebar() {
     const { user, logout } = useAuth();
+    const { theme, toggleTheme } = useTheme();
 
 
     const navItems = [
@@ -24,12 +26,12 @@ export default function Sidebar() {
         <aside className="w-64 bg-surface border-r border-border h-screen flex flex-col justify-between shadow-sm z-20 transition-colors duration-200">
 
             <div>
-                <div className="h-20 px-4 border-b border-border flex items-center">
-                    <NavLink to="/dashboard" className="w-full h-full flex items-center">
+                <div className="h-28 border-b border-border">
+                    <NavLink to="/dashboard" className="w-full h-full block">
                         <img
                             src={logo}
                             alt="ProfConnect"
-                            className="w-full h-full object-contain select-none"
+                            className="w-full h-full object-cover select-none"
                             draggable={false}
                         />
                     </NavLink>
@@ -86,6 +88,15 @@ export default function Sidebar() {
                     <Settings size={20} />
                     Settings
                 </NavLink>
+
+                <button
+                    type="button"
+                    onClick={toggleTheme}
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors text-muted hover:bg-surface2 hover:text-fg"
+                >
+                    {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+                    {theme === "dark" ? "Light Mode" : "Dark Mode"}
+                </button>
 
                 <div className="my-2 border-t border-border"></div>
 
