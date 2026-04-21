@@ -5,6 +5,7 @@ import { authAPI } from "../api/auth";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 import { Mail, Lock, ArrowRight } from "lucide-react";
+import { Background } from "../components/Background";
 
 export default function Login() {
     const navigate = useNavigate();
@@ -66,16 +67,10 @@ export default function Login() {
     const iconClass = "absolute left-3 top-3.5 text-gray-400 h-5 w-5";
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-900 py-12 px-4 relative">
+        <div className="min-h-screen flex items-center justify-center bg-gray-900 py-12 px-4 relative overflow-hidden">
+            <Background blur={10} dim={0.55} />
 
-            <div className="absolute inset-0 z-0"
-                 style={{
-                     backgroundImage: "url('https://www.iiitnr.ac.in/sites/default/files/banner.jpg')",
-                     backgroundSize: "cover", backgroundPosition: "center", filter: "blur(6px) brightness(0.3)"
-                 }}
-            />
-
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md z-10 overflow-hidden relative">
+            <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl w-full max-w-md z-10 overflow-hidden relative">
                 <div className="p-8">
 
 

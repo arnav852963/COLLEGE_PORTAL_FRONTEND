@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import { authAPI } from "../api/auth";
 import toast from "react-hot-toast";
+import { Background } from "../components/Background";
 import {
     User, Mail, Lock, Briefcase, BookOpen,
     Image as ImageIcon, CheckCircle, ArrowRight, ArrowLeft
@@ -57,7 +58,6 @@ export default function Signup() {
     const validateStep = () => {
         if (currentStep === 1) {
             if (!formData.fullName || !formData.username || !formData.email) return "Please fill all identity fields.";
-            if (!formData.email.includes("@iiitnr.edu.in")) return "Must use an @iiitnr.edu.in email.";
         }
         if (currentStep === 2) {
             if (!formData.password || !formData.confirmPassword) return "Please create a password.";
@@ -91,7 +91,7 @@ export default function Signup() {
         if (coverImage) submission.append("coverImage", coverImage);
 
         try {
-            const response = await authAPI.register(submission);
+            await authAPI.register(submission);
             toast.success("Account created successfully!");
             navigate("/login");
         } catch (err) {
@@ -106,15 +106,10 @@ export default function Signup() {
     const iconClass = "absolute left-3 top-3.5 text-gray-400 h-5 w-5";
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-900 py-12 px-4 relative">
-            <div className="absolute inset-0 z-0"
-                 style={{
-                     backgroundImage: "url('https://www.iiitnr.ac.in/sites/default/files/banner.jpg')",
-                     backgroundSize: "cover", backgroundPosition: "center", filter: "blur(6px) brightness(0.3)"
-                 }}
-            />
+        <div className="min-h-screen flex items-center justify-center bg-gray-900 py-12 px-4 relative overflow-hidden">
+            <Background blur={10} dim={0.55} />
 
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg z-10 overflow-hidden relative flex flex-col">
+            <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl w-full max-w-lg z-10 overflow-hidden relative flex flex-col">
 
                 <div className="h-1.5 bg-gray-100 w-full">
                     <div className="h-full bg-blue-600 transition-all duration-500" style={{ width: `${(currentStep / 4) * 100}%` }}></div>
@@ -143,7 +138,7 @@ export default function Signup() {
                             <div className="space-y-4 animate-fade-in">
                                 <div className="relative"> <User className={iconClass} /> <input name="fullName" value={formData.fullName} onChange={handleChange} placeholder="Full Name" className={inputClass} autoFocus /> </div>
                                 <div className="relative"> <User className={iconClass} /> <input name="username" value={formData.username} onChange={handleChange} placeholder="Username" className={inputClass} /> </div>
-                                <div className="relative"> <Mail className={iconClass} /> <input name="email" value={formData.email} onChange={handleChange} placeholder="Email (@iiitnr.edu.in)" className={inputClass} /> </div>
+                                <div className="relative"> <Mail className={iconClass} /> <input name="email" value={formData.email} onChange={handleChange} placeholder="Email" className={inputClass} /> </div>
                             </div>
                         )}
 

@@ -1,6 +1,7 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { Logo } from "../Logo";
 
 import {
     LayoutDashboard, BookOpen, Folders, Briefcase, FileBadge,
@@ -20,13 +21,13 @@ export default function Sidebar() {
     ];
 
     return (
-        <aside className="w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 h-screen flex flex-col justify-between shadow-sm z-20 transition-colors duration-200">
+        <aside className="w-64 bg-white border-r border-gray-200 h-screen flex flex-col justify-between shadow-sm z-20 transition-colors duration-200">
 
             <div>
-                <div className="h-16 flex items-center px-6 border-b border-gray-100 dark:border-gray-800">
-           <span className="text-xl font-bold text-gray-800 dark:text-gray-100 tracking-tight">
-             <span className="text-orange-600 dark:text-orange-400">I</span><span className="text-white dark:text-white">I</span><span className="text-green-600 dark:text-green-600">I</span><span className="text-blue-600 dark:text-blue-400">T</span><span className="text-white dark:text-white"> NR</span>
-           </span>
+                <div className="h-16 flex items-center px-6 border-b border-gray-100">
+                    <NavLink to="/dashboard" className="block">
+                        <Logo size={34} showText className="select-none" />
+                    </NavLink>
                 </div>
 
                 <nav className="p-4 space-y-1">
@@ -37,8 +38,8 @@ export default function Sidebar() {
                             className={({ isActive }) =>
                                 `flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                                     isActive
-                                        ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
-                                        : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200"
+                                        ? "bg-blue-50 text-blue-600"
+                                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                                 }`
                             }
                         >
@@ -53,8 +54,8 @@ export default function Sidebar() {
                             className={({ isActive }) =>
                                 `flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                                     isActive
-                                        ? "bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400"
-                                        : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
+                                        ? "bg-purple-50 text-purple-600"
+                                        : "text-gray-600 hover:bg-gray-50"
                                 }`
                             }
                         >
@@ -65,15 +66,15 @@ export default function Sidebar() {
                 </nav>
             </div>
 
-            <div className="p-4 border-t border-gray-100 dark:border-gray-800 space-y-1">
+            <div className="p-4 border-t border-gray-100 space-y-1">
 
                 <NavLink
                     to="/settings"
                     className={({ isActive }) =>
                         `flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                             isActive
-                                ? "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-                                : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
+                                ? "bg-gray-100 text-gray-900"
+                                : "text-gray-600 hover:bg-gray-50"
                         }`
                     }
                 >
@@ -81,21 +82,21 @@ export default function Sidebar() {
                     Settings
                 </NavLink>
 
-                <div className="my-2 border-t border-gray-100 dark:border-gray-800"></div>
+                <div className="my-2 border-t border-gray-100"></div>
 
                 <div className="flex items-center gap-3 px-2 py-2">
                     <img
                         src={user?.avatar || "https://via.placeholder.com/40"}
                         alt="User"
-                        className="w-8 h-8 rounded-full object-cover border border-gray-200 dark:border-gray-700"
+                        className="w-8 h-8 rounded-full object-cover border border-gray-200"
                     />
                     <div className="overflow-hidden flex-1">
-                        <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 truncate">{user?.fullName}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
+                        <p className="text-sm font-semibold text-gray-800 truncate">{user?.fullName}</p>
+                        <p className="text-xs text-gray-500 truncate">{user?.email}</p>
                     </div>
                     <button
                         onClick={logout}
-                        className="text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 transition p-1"
+                        className="text-gray-400 hover:text-red-600 transition p-1"
                         title="Sign Out"
                     >
                         <LogOut size={18} />
