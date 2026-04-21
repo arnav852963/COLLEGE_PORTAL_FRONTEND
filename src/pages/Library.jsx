@@ -123,29 +123,29 @@ export default function Library() {
     return (
         <div className="space-y-6 animate-fade-in pb-10 max-w-7xl mx-auto">
 
-            <div className="flex flex-col md:flex-row justify-between items-end gap-4 border-b border-gray-100 pb-6">
+            <div className="flex flex-col md:flex-row justify-between items-end gap-4 border-b border-border pb-6">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Library</h1>
-                    <p className="text-gray-500 mt-1">Manage, search, and organize your research.</p>
+                    <h1 className="text-3xl font-bold text-fg tracking-tight">Library</h1>
+                    <p className="text-muted mt-1">Manage, search, and organize your research.</p>
                 </div>
 
                 <div className="relative w-full md:w-96 group">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         {loading && debouncedSearch ? (
-                            <Loader2 className="h-5 w-5 text-blue-500 animate-spin" />
+                            <Loader2 className="h-5 w-5 text-accent animate-spin" />
                         ) : (
-                            <Search className="h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                            <Search className="h-5 w-5 text-muted group-focus-within:text-accent transition-colors" />
                         )}
                     </div>
                     <input
                         type="text"
-                        className="block w-full pl-10 pr-10 py-3 border border-gray-200 rounded-xl leading-5 bg-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all shadow-sm"
+                        className="block w-full pl-10 pr-10 py-3 border border-border rounded-xl leading-5 bg-surface placeholder:text-muted text-fg focus:outline-none focus:border-accent focus:ring-4 focus:ring-ring transition-all shadow-sm"
                         placeholder="Search database..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                     {searchTerm && (
-                        <button onClick={clearSearch} className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
+                        <button onClick={clearSearch} className="absolute inset-y-0 right-0 pr-3 flex items-center text-muted hover:text-fg">
                             <X size={16} />
                         </button>
                     )}
@@ -153,7 +153,7 @@ export default function Library() {
             </div>
 
             {!debouncedSearch && (
-                <div className="flex p-1 space-x-1 bg-gray-100/80 rounded-xl w-fit backdrop-blur-sm overflow-x-auto">
+                <div className="flex p-1 space-x-1 bg-surface2/80 rounded-xl w-fit backdrop-blur-sm overflow-x-auto border border-border">
                     <TabButton active={activeTab === "all"} onClick={() => setActiveTab("all")} label="All Papers" icon={<LayoutGrid size={16} />} />
                     <TabButton active={activeTab === "starred"} onClick={() => setActiveTab("starred")} label="Favorites" icon={<Heart size={16} />} />
                     <TabButton active={activeTab === "journal"} onClick={() => setActiveTab("journal")} label="Journals" icon={<FileText size={16} />} />
@@ -163,23 +163,23 @@ export default function Library() {
             )}
 
             {debouncedSearch && (
-                <div className="text-sm text-gray-500 font-medium px-1">
-                    Showing results for <span className="text-gray-900">"{debouncedSearch}"</span>
+                <div className="text-sm text-muted font-medium px-1">
+                    Showing results for <span className="text-fg">"{debouncedSearch}"</span>
                 </div>
             )}
 
             {loading && !papers.length ? (
-                <div className="py-20 text-center text-gray-400 flex flex-col items-center">
+                <div className="py-20 text-center text-muted flex flex-col items-center">
                     <Loader2 className="h-8 w-8 animate-spin mb-2" />
                     <p>Fetching papers...</p>
                 </div>
             ) : papers.length === 0 ? (
-                <div className="py-20 text-center bg-white rounded-2xl border border-dashed border-gray-300">
-                    <p className="text-gray-500 text-lg capitalize">
+                <div className="py-20 text-center bg-surface rounded-2xl border border-dashed border-border">
+                    <p className="text-muted text-lg capitalize">
                         {activeTab === 'starred' ? 'No favorites yet.' : 'No papers found.'}
                     </p>
                     {activeTab === 'starred' && (
-                        <p className="text-sm text-gray-400 mt-2">Star papers in the 'All Papers' tab to see them here.</p>
+                        <p className="text-sm text-muted mt-2">Star papers in the 'All Papers' tab to see them here.</p>
                     )}
                 </div>
             ) : (
@@ -213,8 +213,8 @@ function TabButton({ active, onClick, label, icon }) {
             className={`
         flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 whitespace-nowrap
         ${active
-                ? "bg-white text-blue-600 shadow-sm ring-1 ring-black/5"
-                : "text-gray-500 hover:text-gray-900 hover:bg-white/60"
+                ? "bg-surface text-accent shadow-sm ring-1 ring-border"
+                : "text-muted hover:text-fg hover:bg-surface/60"
             }
       `}
         >
@@ -226,7 +226,7 @@ function TabButton({ active, onClick, label, icon }) {
 
 function PaperCard({ paper, onDelete, onStar, onAddToCollection }) {
     return (
-        <div className="group relative bg-white p-5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:border-blue-200 transition-all duration-200 flex flex-col sm:flex-row gap-4">
+        <div className="group relative bg-surface p-5 rounded-xl border border-border shadow-sm hover:shadow-md transition-all duration-200 flex flex-col sm:flex-row gap-4">
 
             <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap gap-2 mb-2">
@@ -240,20 +240,20 @@ function PaperCard({ paper, onDelete, onStar, onAddToCollection }) {
                         </span>
                     )}
                     {paper.tag?.map((t, i) => (
-                        <span key={i} className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-md font-medium">#{t}</span>
+                        <span key={i} className="px-2 py-0.5 bg-surface2 text-muted text-xs rounded-md font-medium">#{t}</span>
                     ))}
                 </div>
 
-                <h3 className="text-lg font-bold text-gray-900 leading-snug mb-2 group-hover:text-blue-600 transition-colors">
+                <h3 className="text-lg font-bold text-fg leading-snug mb-2 group-hover:text-accent transition-colors">
                     {paper.title}
                 </h3>
 
-                <p className="text-sm text-gray-600 mb-3 truncate">
-                    <span className="font-medium text-gray-900">Authors:</span> {Array.isArray(paper.authors) ? paper.authors.join(", ") : paper.authors}
+                <p className="text-sm text-muted mb-3 truncate">
+                    <span className="font-medium text-fg">Authors:</span> {Array.isArray(paper.authors) ? paper.authors.join(", ") : paper.authors}
                 </p>
 
-                <div className="flex flex-wrap items-center gap-4 text-xs text-gray-500 font-medium">
-                    <div className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded border border-gray-100">
+                <div className="flex flex-wrap items-center gap-4 text-xs text-muted font-medium">
+                    <div className="flex items-center gap-1 bg-app px-2 py-1 rounded border border-border">
                         {paper.publishedBy || "Unknown Publisher"}
                     </div>
                     <span>{new Date(paper.publishedDate).getFullYear()}</span>
@@ -263,12 +263,12 @@ function PaperCard({ paper, onDelete, onStar, onAddToCollection }) {
                 </div>
             </div>
 
-            <div className="flex sm:flex-col items-center justify-center gap-2 border-t sm:border-t-0 sm:border-l sm:pl-4 border-gray-100 pt-3 sm:pt-0">
+            <div className="flex sm:flex-col items-center justify-center gap-2 border-t sm:border-t-0 sm:border-l sm:pl-4 border-border pt-3 sm:pt-0">
                 <a
                     href={paper.link || paper.manualUpload}
                     target="_blank"
                     rel="noreferrer"
-                    className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                    className="p-2 text-muted hover:text-accent hover:bg-accent-soft rounded-lg transition-colors"
                     title="Open Link"
                 >
                     <ExternalLink size={18} />
@@ -278,7 +278,7 @@ function PaperCard({ paper, onDelete, onStar, onAddToCollection }) {
                     onClick={() => onStar(paper._id)}
                     className={`p-2 rounded-lg transition-colors ${paper.isStarred
                         ? "text-yellow-500 bg-yellow-50 hover:bg-yellow-100"
-                        : "text-gray-400 hover:text-yellow-500 hover:bg-yellow-50"
+                        : "text-muted hover:text-yellow-500 hover:bg-yellow-50"
                     }`}
                     title={paper.isStarred ? "Remove Star" : "Add Star"}
                 >
@@ -287,7 +287,7 @@ function PaperCard({ paper, onDelete, onStar, onAddToCollection }) {
 
                 <button
                     onClick={onAddToCollection}
-                    className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                    className="p-2 text-muted hover:text-accent hover:bg-accent-soft rounded-lg transition-colors"
                     title="Add to Collection"
                 >
                     <FolderPlus size={18} />
@@ -295,7 +295,7 @@ function PaperCard({ paper, onDelete, onStar, onAddToCollection }) {
 
                 <button
                     onClick={() => onDelete(paper._id)}
-                    className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    className="p-2 text-muted hover:text-danger hover:bg-red-500/10 rounded-lg transition-colors"
                     title="Delete"
                 >
                     <Trash2 size={18} />
