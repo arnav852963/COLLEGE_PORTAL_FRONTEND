@@ -43,3 +43,14 @@ body {
   background: var(--app-bg);
   color: var(--fg);
 }
+
+/* Make native date picker/calendar icon visible in dark theme */
+[data-theme="dark"] input[type="date"] {
+  color-scheme: dark;
+}
+
+[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(1.2);
+  opacity: 0.9;
+}
+
