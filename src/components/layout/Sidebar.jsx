@@ -1,7 +1,7 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { Logo } from "../Logo";
+import logo from "../../assets/logo.png";
 
 import {
     LayoutDashboard, BookOpen, Folders, Briefcase, FileBadge,
@@ -24,9 +24,14 @@ export default function Sidebar() {
         <aside className="w-64 bg-surface border-r border-border h-screen flex flex-col justify-between shadow-sm z-20 transition-colors duration-200">
 
             <div>
-                <div className="h-16 flex items-center px-6 border-b border-border">
-                    <NavLink to="/dashboard" className="block">
-                        <Logo size={46} showText={false} className="select-none" />
+                <div className="h-20 px-4 border-b border-border flex items-center">
+                    <NavLink to="/dashboard" className="w-full h-full flex items-center">
+                        <img
+                            src={logo}
+                            alt="ProfConnect"
+                            className="w-full h-full object-contain select-none"
+                            draggable={false}
+                        />
                     </NavLink>
                 </div>
 
