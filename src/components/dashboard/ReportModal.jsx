@@ -65,20 +65,20 @@ export default function ReportModal({ isOpen, onClose, onGenerated }) {
 
     return (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
-            <div className="bg-white rounded-2xl w-full max-w-md p-6 relative shadow-2xl animate-scale-in">
+            <div className="bg-surface rounded-2xl w-full max-w-md p-6 relative shadow-2xl animate-scale-in border border-border">
 
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+                    className="absolute top-4 right-4 text-muted hover:text-fg"
                 >
                     <X size={24} />
                 </button>
 
-                <h2 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+                <h2 className="text-xl font-bold text-fg mb-2 flex items-center gap-2">
                     <FileText className="text-blue-600" /> Generate Report
                 </h2>
 
-                <p className="text-sm text-gray-500 mb-6">
+                <p className="text-sm text-muted mb-6">
                     Select the fields you want to include in your Word document.
                 </p>
 
@@ -89,8 +89,8 @@ export default function ReportModal({ isOpen, onClose, onGenerated }) {
                             onClick={() => toggleOption(key)}
                             className={`flex items-center justify-between w-full p-3 rounded-xl border transition-all ${
                                 options[key]
-                                    ? "bg-blue-50 border-blue-200 text-blue-800"
-                                    : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50"
+                                    ? "bg-accent-soft border-border text-fg"
+                                    : "bg-app border-border text-muted hover:bg-surface2"
                             }`}
                         >
                             <span className="capitalize font-medium">
@@ -99,7 +99,7 @@ export default function ReportModal({ isOpen, onClose, onGenerated }) {
                             {options[key] ? (
                                 <CheckSquare size={20} className="text-blue-600" />
                             ) : (
-                                <Square size={20} className="text-gray-400" />
+                                <Square size={20} className="text-muted" />
                             )}
                         </button>
                     ))}
@@ -108,7 +108,7 @@ export default function ReportModal({ isOpen, onClose, onGenerated }) {
                 <button
                     onClick={handleGenerate}
                     disabled={loading}
-                    className="w-full bg-gray-900 text-white py-3 rounded-xl font-medium hover:bg-gray-800 transition flex justify-center items-center gap-2 disabled:opacity-70"
+                    className="w-full bg-accent text-white py-3 rounded-xl font-medium hover:opacity-95 transition flex justify-center items-center gap-2 disabled:opacity-70"
                 >
                     {loading ? (
                         <Loader2 size={18} className="animate-spin" />
@@ -119,8 +119,8 @@ export default function ReportModal({ isOpen, onClose, onGenerated }) {
                 </button>
 
                 {loading && (
-                    <div className="absolute inset-0 bg-white/60 flex items-center justify-center rounded-2xl">
-                        <Loader2 size={32} className="animate-spin text-gray-700" />
+                    <div className="absolute inset-0 bg-black/20 flex items-center justify-center rounded-2xl">
+                        <Loader2 size={32} className="animate-spin text-fg" />
                     </div>
                 )}
             </div>

@@ -26,12 +26,12 @@ export default function Sidebar() {
         <aside className="w-64 bg-surface border-r border-border h-screen flex flex-col justify-between shadow-sm z-20 transition-colors duration-200">
 
             <div>
-                <div className="h-28 border-b border-border">
-                    <NavLink to="/dashboard" className="w-full h-full block">
+                <div className="h-28 border-b border-border bg-app">
+                    <NavLink to="/dashboard" className="w-full h-full block p-2">
                         <img
                             src={logo}
                             alt="ProfConnect"
-                            className="w-full h-full object-cover select-none"
+                            className="w-full h-full object-cover select-none rounded-xl"
                             draggable={false}
                         />
                     </NavLink>

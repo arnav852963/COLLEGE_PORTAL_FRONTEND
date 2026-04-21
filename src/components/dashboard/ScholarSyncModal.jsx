@@ -54,34 +54,34 @@ export default function ScholarSyncModal({ isOpen, onClose, onSuccess }) {
 
     return (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 relative">
-                <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+            <div className="bg-surface rounded-2xl shadow-2xl w-full max-w-lg p-6 relative border border-border">
+                <button onClick={onClose} className="absolute top-4 right-4 text-muted hover:text-fg">
                     <X size={24} />
                 </button>
 
-                <h2 className="text-xl font-bold text-gray-800 mb-2 flex items-center gap-2">
+                <h2 className="text-xl font-bold text-fg mb-2 flex items-center gap-2">
                     <DownloadCloud className="text-blue-600" />
                     Sync Google Scholar
                 </h2>
-                <p className="text-sm text-gray-500 mb-6">
+                <p className="text-sm text-muted mb-6">
                     Paste your profile URL. We will import your papers and update your analytics.
                 </p>
 
                 <div className="space-y-4">
                     <div className="relative">
-                        <LinkIcon className="absolute left-3 top-3.5 text-gray-400 h-5 w-5" />
+                        <LinkIcon className="absolute left-3 top-3.5 text-muted h-5 w-5" />
                         <input
                             type="text"
                             placeholder="https://scholar.google.com/citations?user=..."
                             value={url}
                             onChange={(e) => setUrl(e.target.value)}
                             disabled={status !== "idle"}
-                            className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none text-gray-700"
+                            className="w-full pl-10 pr-4 py-3 rounded-lg border border-border bg-app focus:ring-2 focus:ring-ring outline-none text-fg placeholder:text-muted"
                         />
                     </div>
 
                     {logs.length > 0 && (
-                        <div className="bg-gray-50 p-3 rounded-lg text-xs font-mono text-gray-600 space-y-1 border border-gray-200">
+                        <div className="bg-app p-3 rounded-lg text-xs font-mono text-muted space-y-1 border border-border">
                             {logs.map((log, i) => (
                                 <div key={i} className="flex items-center gap-2">
                                     <span className={`w-1.5 h-1.5 rounded-full ${log.includes("Error") ? "bg-red-500" : "bg-blue-500"}`}></span>
@@ -95,7 +95,7 @@ export default function ScholarSyncModal({ isOpen, onClose, onSuccess }) {
                         onClick={handleSync}
                         disabled={status !== "idle"}
                         className={`w-full py-3 rounded-lg font-semibold text-white transition-all flex items-center justify-center gap-2
-              ${status === "success" ? "bg-green-600" : "bg-blue-600 hover:bg-blue-700"}
+              ${status === "success" ? "bg-green-600" : "bg-accent hover:opacity-95"}
               ${status !== "idle" && status !== "success" ? "opacity-80 cursor-wait" : ""}
             `}
                     >
