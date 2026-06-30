@@ -53,9 +53,11 @@ export default function Login() {
             login(userData);
 
             toast.success("Signed in with Google!");
+            setLoading(false)
             navigate("/dashboard");
         } catch (err) {
             console.error(err);
+            setLoading(false);
             toast.error(err.response?.data?.message || "Google Login failed.");
         } finally {
             setLoading(false);

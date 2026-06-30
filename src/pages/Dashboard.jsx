@@ -87,25 +87,7 @@ export default function Dashboard() {
         <div className="relative space-y-8 animate-fade-in pb-10">
 
 
-            {currentStep === 1 && (
-                <div className="absolute top-0 right-0 z-50 flex flex-col items-end gap-2 animate-bounce">
-                    <div className="bg-blue-600 text-white p-4 rounded-2xl shadow-2xl max-w-xs mr-4">
-                        <p className="font-bold flex items-center gap-2 text-sm">
-                            <MousePointer2 size={16} /> Step 1: Let's get started!
-                        </p>
-                        <p className="text-xs mt-1 opacity-90">Click this button to open the synchronization tool.</p>
-                        <button
-                            onClick={() => { setCurrentStep(2); setIsSyncOpen(true); }}
-                            className="mt-3 bg-white text-blue-600 px-3 py-1 rounded-lg text-xs font-bold hover:bg-gray-100 transition"
-                        >
-                            Next Step
-                        </button>
-                    </div>
-                    <div className="mr-20 text-blue-600">
-                        <ArrowRight size={40} className="rotate-90" />
-                    </div>
-                </div>
-            )}
+
 
 
             {currentStep === 2 && (
@@ -180,17 +162,39 @@ export default function Dashboard() {
                         )}
                     </div>
 
-                    <button
-                        onClick={() => {
-                            setIsSyncOpen(true);
-                            if(currentStep === 1) setCurrentStep(2); // Progress tour if they manually click
-                        }}
-                        className={`flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-xl hover:bg-blue-700 transition shadow-lg shadow-blue-500/20 
-                        ${currentStep === 1 ? "ring-4 ring-blue-400 ring-offset-2 animate-pulse" : ""}`}
-                    >
-                        <RefreshCw size={18} />
-                        {hasScholarData ? "Update Data" : "Sync Scholar Profile"}
-                    </button>
+                    <div className="relative">
+                        <button
+                            onClick={() => {
+                                setIsSyncOpen(true);
+                                if(currentStep === 1) setCurrentStep(2); // Progress tour if they manually click
+                            }}
+                            className={`flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-xl hover:bg-blue-700 transition shadow-lg shadow-blue-500/20 
+                            ${currentStep === 1 ? "ring-4 ring-blue-400 ring-offset-2 animate-pulse" : ""}`}
+                        >
+                            <RefreshCw size={18} />
+                            {hasScholarData ? "Update Data" : "Sync Scholar Profile"}
+                        </button>
+                        
+                        {currentStep === 1 && (
+                            <div className="absolute top-full mt-4 right-0 z-50 flex flex-col items-end gap-2 animate-bounce">
+                                <div className="mr-10 text-blue-600">
+                                    <ArrowRight size={40} className="-rotate-90" />
+                                </div>
+                                <div className="bg-blue-600 text-white p-4 rounded-2xl shadow-2xl max-w-xs">
+                                    <p className="font-bold flex items-center gap-2 text-sm">
+                                        <MousePointer2 size={16} /> Step 1: Let's get started!
+                                    </p>
+                                    <p className="text-xs mt-1 opacity-90">Click this button to open the synchronization tool.</p>
+                                    <button
+                                        onClick={() => { setCurrentStep(2); setIsSyncOpen(true); }}
+                                        className="mt-3 w-full bg-white text-blue-600 px-3 py-1.5 rounded-lg text-sm font-bold hover:bg-gray-100 transition"
+                                    >
+                                        Next Step
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 
